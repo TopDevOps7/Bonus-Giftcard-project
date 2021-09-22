@@ -42,11 +42,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
   },
   wiithButton: {
-    paddingRight: 0,
-    height: 40,
     width: "100%",
-    "& input": {
-      padding: "9.5px ​14px"
+    "& .MuiOutlinedInput-adornedEnd": {
+      paddingRight: 0
     }
   },
   applyButton: {

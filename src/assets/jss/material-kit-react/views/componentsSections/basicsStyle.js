@@ -11,7 +11,7 @@ const basicsStyle = theme => ({
     marginBottom: 50,
     paddingTop: 1,
     [theme.breakpoints.down("sm")]: {
-      marginTop: 10
+      marginTop: 0,
     }
   },
   title: {

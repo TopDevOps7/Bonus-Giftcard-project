@@ -1,25 +1,43 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useMediaQuery, useTheme, OutlinedInput, InputAdornment } from "@material-ui/core";
+import {
+  useSelector,
+  useDispatch
+} from "react-redux";
+import { useMediaQuery, useTheme, TextField, InputAdornment } from "@material-ui/core";
 import { Home } from '@material-ui/icons';
-// import CustomInput from "../../components/CustomInput/CustomInput";
-import Button from "../../components/CustomButtons/Button";
-import CartCard from "../../components/CartCard/cartCard";
+import Button from "components/CustomButtons/Button";
+import CartCard from "components/CartCard/cartCard";
+
+import {
+  getCards,
+} from "../../redux/actions/home"
 
 import useStyles from "./style";
 
 const Cart = () => {
   const classes = useStyles();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const orders = useSelector((state) => state.home.orders);
+  const [updateFlag, setUpdateFlag] = useState(0);
   console.log(orders, "----orders-----");
-
   // const [state, setState] = useState({});
   // const [isEdit, setIsEdit] = useState(-1);
+
+  const getTotal = () => {
+    let total = 0;
+    orders.forEach(order => {
+      total += Number(order.amount) * Number(order.monto)
+    });
+    return total;
+  }
+
+  useEffect(() => {
+    dispatch(getCards());
+  }, [])
 
   return (
     <div className={classes.root}>
@@ -30,7 +48,7 @@ const Cart = () => {
           <div className={classes.product}>
             {orders?.map((ele, index) => (
               <Fragment key={index}>
-                <CartCard item={ele} index={index} />
+                <CartCard item={ele} index={index} setUpdate={() => setUpdateFlag(updateFlag + 1)} />
                 {index !== (orders.length - 1) && <hr />}
               </Fragment>
             ))}
@@ -54,14 +72,17 @@ const Cart = () => {
             className={classes.inputForm}
           /> */}
             {/* <Button color="primary"> APLICAR</Button> */}
-            <OutlinedInput
+            <TextField
               className={classes.wiithButton}
-              placeholder="Introduce el código"
-              endAdornment={
-                <InputAdornment position="end">
-                  <Button className={classes.applyButton} color="primary">APLICAR</Button>
-                </InputAdornment>
-              }
+              variant="outlined"
+              margin="dense"
+              label="Introduce el código"
+              InputProps={{
+                endAdornment:
+                  <InputAdornment position="end">
+                    <Button className={classes.applyButton} color="primary">APLICAR</Button>
+                  </InputAdornment>
+              }}
             />
             {!isMobile && (
               <>
@@ -69,7 +90,8 @@ const Cart = () => {
                 <br />
                 <hr />
                 <h6 className={classNames(classes.rightSubTitle)}>
-                  <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} /> $50
+                  <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} />
+                  ${getTotal()}
                 </h6>
               </>
             )}
@@ -78,7 +100,9 @@ const Cart = () => {
             </Link>
             {!isMobile && <Link to="/"><p className={classes.finalPara}>Seguir comprando</p></Link>}
             {isMobile && (
-              <Button className={classes.finalBtn}>Seguir comprando</Button>
+              <Link to="/">
+                <Button className={classes.finalBtn}>Seguir comprando</Button>
+              </Link>
             )}
           </div>
         </div>

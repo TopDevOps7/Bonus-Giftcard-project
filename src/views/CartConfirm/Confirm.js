@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import classNames from "classnames";
 // import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useMediaQuery, useTheme, OutlinedInput, InputAdornment } from "@material-ui/core";
+import { useMediaQuery, useTheme, TextField, InputAdornment } from "@material-ui/core";
 import { CheckCircleRounded } from '@material-ui/icons';
 
 // import CustomInput from "../../components/CustomInput/CustomInput";
@@ -19,10 +19,17 @@ const Confirm = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const orders = useSelector((state) => state.home.orders);
   const [success, setSuccess] = useState(false);
-  console.log(orders, "----orders-----");
 
   // const [state, setState] = useState({});
   // const [isEdit, setIsEdit] = useState(-1);
+
+  const getTotal = () => {
+    let total = 0;
+    orders.forEach(order => {
+      total += Number(order.amount) * Number(order.monto)
+    });
+    return total;
+  }
 
   return (
     <div className={classes.root}>
@@ -31,35 +38,45 @@ const Confirm = () => {
           {!success && <>
             <h3 className={classes.leftTitle}>Tu orden : 0221</h3>
             <div className={classNames(classes.twoInput)}>
-              <OutlinedInput
-                className={classNames(classes.input, classes.nameInput)}
-                placeholder="Nombre del tarjetahabiente"
+              <TextField
+                className={classNames(classes.nameInput, classes.twoLeft)}
+                margin="dense"
+                variant="outlined"
+                label="Nombre del tarjetahabiente"
               />
-              <OutlinedInput
-                className={classNames(classes.input, classes.cpInput)}
-                placeholder="C.P."
+              <TextField
+                className={classNames(classes.cpInput, classes.twoRight)}
+                margin="dense"
+                variant="outlined"
+                label="C.P."
               />
             </div>
-            <OutlinedInput
-              className={classNames(classes.input, classes.width100)}
-              placeholder="Número de la tarjeta"
+            <TextField
+              className={classNames(classes.width100)}
+              margin="dense"
+              variant="outlined"
+              label="Número de la tarjeta"
             />
             <div className={classNames(classes.twoInput)}>
-              <OutlinedInput
+              <TextField
                 // type="type"
-                className={classNames(classes.input, classes.dateInput)}
-                placeholder="MM/YY"
+                className={classNames(classes.dateInput, classes.twoLeft)}
+                margin="dense"
+                variant="outlined"
+                label="MM/YY"
               />
-              <OutlinedInput
-                className={classNames(classes.input, classes.cvcInput)}
-                placeholder="CVC"
+              <TextField
+                className={classNames(classes.cvcInput, classes.twoRight)}
+                margin="dense"
+                variant="outlined"
+                label="CVC"
               />
             </div>
             <Button color="primary" style={{ float: "right", width: 200 }} onClick={() => setSuccess(true)}>PAGAR</Button>
           </>}
           {success && <>
             <div className={classes.titleContainer}>
-              <CheckCircleRounded fontSize="large" />
+              <CheckCircleRounded fontSize="large" color="primary" />
               <div>
                 <h3>Compra éxitosa</h3>
                 <p>Aquí están los detalles de tu orden. También hemos enviado una copia de está información a tu correo.</p>
@@ -87,14 +104,17 @@ const Confirm = () => {
             className={classes.inputForm}
           /> */}
           {/* <Button color="primary"> APLICAR</Button> */}
-          <OutlinedInput
+          <TextField
             className={classes.wiithButton}
-            placeholder="Introduce el código"
-            endAdornment={
-              <InputAdornment position="end">
-                <Button className={classes.applyButton} color="primary">APLICAR</Button>
-              </InputAdornment>
-            }
+            variant="outlined"
+            margin="dense"
+            label="Introduce el código"
+            InputProps={{
+              endAdornment:
+                <InputAdornment position="end">
+                  <Button className={classes.applyButton} color="primary">APLICAR</Button>
+                </InputAdornment>
+            }}
           />
           {!isMobile && (
             <>
@@ -102,7 +122,8 @@ const Confirm = () => {
               <br />
               <hr />
               <h6 className={classNames(classes.rightSubTitle)}>
-                <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} /> $50
+                <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} />
+                ${getTotal()}
               </h6>
             </>
           )}

@@ -14,7 +14,7 @@ import {
 const initialState = {
   cards: [],
   filteredCards: [],
-  card: [],
+  card: {},
   orders: [],
 };
 

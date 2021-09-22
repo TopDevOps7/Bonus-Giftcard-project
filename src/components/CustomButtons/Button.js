@@ -12,9 +12,7 @@ import Button from "@material-ui/core/Button";
 
 import buttonStyle from "assets/jss/material-kit-react/components/buttonStyle";
 
-const makeComponentStyles = makeStyles(() => ({
-  ...buttonStyle,
-}));
+const makeComponentStyles = makeStyles(buttonStyle);
 
 const RegularButton = React.forwardRef((props, ref) => {
   const {

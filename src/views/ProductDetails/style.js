@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
   },
   label: {
     cursor: "pointer",
+    marginRight: 5,
+    "& span": {
+      fontSize: 14
+    }
   },
   cardDesign: {
     marginLeft: 15,
@@ -81,13 +85,19 @@ const useStyles = makeStyles((theme) => ({
     },
     [theme.breakpoints.down("xs")]: {
       marginLeft: 10,
+      width: "auto",
       // marginRight: "auto",
+      "& img": {
+        width: "98%",
+        height: "auto",
+      },
     },
   },
   cardDesignImages: {
     display: "flex",
     // height: 223,
     height: 80,
+    flexWrap: "wrap",
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
@@ -136,7 +146,9 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: 15
     }
   },
-  link: {
+  terms: {
+    fontSize: 13,
+    cursor: "pointer",
     textDecoration: "underline",
   },
   leftSide: {
@@ -144,6 +156,7 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 20,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
+      marginLeft: 0,
     },
   },
   rightSide: {

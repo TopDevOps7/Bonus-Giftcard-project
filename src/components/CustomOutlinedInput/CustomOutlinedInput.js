@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
-import { OutlinedInput, makeStyles } from "@material-ui/core";
+import { TextField, makeStyles } from "@material-ui/core";
 
 import { Field } from "formik";
 
@@ -14,49 +14,35 @@ const useStyles = makeStyles(styles);
 
 const CustomOutlinedInput = ({
   type,
-  placeholder,
   value,
   error,
   name,
   info,
-  label,
-  startAdornment,
-  endAdornment,
-  style,
   className,
-  size,
   block,
   id,
-  multiline,
   ...rest
 }) => {
   const classes = useStyles();
+  classes;
   return (
     <>
-      <h6>{label}</h6>
       <Field name={name} id={id} value={value}>
         {({ field }) => (
-          <OutlinedInput
-            id={id}
-            className={classNames({
-              [classes.block]: block,
-              [classes.small]: !multiline && size === "small",
-              [classes.large]: !multiline && size === "large",
-              [classes.default]: !multiline && (size === "default" || (size !== "small" && size !== "large"))
-            }, className, classes.root)}
-            style={style}
+          <TextField
+            variant="outlined"
+            margin="dense"
             type={type}
-            placeholder={placeholder}
+            className={classNames(className, { [classes.block]: block })}
             {...field}
             error={Boolean(error)}
-            startAdornment={startAdornment}
-            endAdornment={endAdornment}
-            multiline={multiline}
+            helperText={error}
             {...rest}
+          // size="small"
           />
         )}
       </Field>
-      <p className={classes.error}>{error}</p>
+      {/* <p className={classes.error}>{error}</p> */}
       <p className={classes.info}>{info}</p>
     </>
   );
@@ -65,19 +51,12 @@ const CustomOutlinedInput = ({
 CustomOutlinedInput.propTypes = {
   id: PropTypes.string,
   type: PropTypes.string,
-  placeholder: PropTypes.string,
   className: PropTypes.string,
-  size: PropTypes.string,
   info: PropTypes.string,
-  label: PropTypes.string,
-  style: PropTypes.object,
   error: PropTypes.string,
   block: PropTypes.bool,
-  multiline: PropTypes.bool,
   name: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  startAdornment: PropTypes.node,
-  endAdornment: PropTypes.node
 };
 
 export default CustomOutlinedInput;

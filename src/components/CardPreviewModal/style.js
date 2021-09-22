@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     width: 296,
     height: 185,
     borderRadius: 10,
-    boxShadow: "2px 2px 10px -1px #00000042"
+    // boxShadow: "2px 2px 10px -1px #00000042"
   },
   cardName: {
     position: "absolute",

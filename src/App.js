@@ -1,11 +1,13 @@
 import React from "react";
 import { useRoutes } from "react-router-dom";
 import { Provider } from "react-redux";
-import { store } from "./redux/store";
-
-import "assets/scss/material-kit-react.scss?v=1.10.0";
+import { ThemeProvider } from "@material-ui/core";
 
 import routes from "routes";
+import theme from "theme";
+import { store } from "redux/store";
+
+import "assets/scss/material-kit-react.scss?v=1.10.0";
 
 // pages for this product
 // import LoginPage from "views/LoginPage/LoginPage";
@@ -17,9 +19,11 @@ const App = () => {
   const routing = useRoutes(routes);
 
   return (
-    <Provider store={store}>
-      {routing}
-    </Provider>
+    <ThemeProvider theme={theme}>
+      <Provider store={store}>
+        {routing}
+      </Provider>
+    </ThemeProvider>
   );
 };
 export default App;

@@ -8,58 +8,60 @@ import * as Yup from "yup";
 
 import { getCardDetail } from "redux/actions/home";
 
-import { useMediaQuery, useTheme } from "@material-ui/core";
+import { useMediaQuery, useTheme, Checkbox, FormControlLabel, RadioGroup, Radio } from "@material-ui/core";
+import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
+import DateFnsUtils from '@date-io/date-fns';
 
 // import GridItem from "../../components/Grid/GridItem";
 // import GridContainer from "../../components/Grid/GridContainer";
 import Button from "components/CustomButtons/Button";
 // import CustomInput from "components/CustomInput/CustomInput";
 import CustomOutlinedInput from "components/CustomOutlinedInput/CustomOutlinedInput";
+import TermsOfUseModal from "components/TermsOfUseModal/TermsOfUseModal";
 // import { validationSchema } from "utils";
 import { addOrder } from "redux/actions/cart";
 
 import Bg1 from "assets/img/Bg1.png";
-import Bg4 from "assets/img/Bg4.png";
-import Bg5 from "assets/img/Bg5.png";
-import Bg3 from "assets/img/Bg3.png";
 import Bg2 from "assets/img/Bg2.png";
+import Bg3 from "assets/img/Bg3.png";
+import Bg4 from "assets/img/Bg4.png";
+import Bg5 from "assets/img/Bg5.svg";
+import Bg6 from "assets/img/Bg6.png";
+import Bg7 from "assets/img/Bg7.png";
+import Bg8 from "assets/img/Bg8.png";
 
 const cards = [
   {
     id: "1",
-    name: "Nutrisa",
-    valid: "Válido hasta el 30/12/2021",
     image: Bg1,
   },
   {
     id: "2",
-    name: "Nutrisa",
-    valid: "Válido hasta el 30/12/2021",
-    image: Bg4,
-  },
-  {
-    id: "3",
-    name: "Nutrisa",
-    valid: "Válido hasta el 30/12/2021",
     image: Bg2,
   },
   {
-    id: "4",
-    name: "Nutrisa",
-    valid: "Válido hasta el 30/12/2021",
+    id: "3",
     image: Bg3,
   },
   {
+    id: "4",
+    image: Bg4,
+  },
+  {
     id: "5",
-    name: "Nutrisa",
-    valid: "Válido hasta el 30/12/2021",
     image: Bg5,
   },
   {
     id: "6",
-    name: "Nutrisa",
-    valid: "Válido hasta el 30/12/2021",
-    image: Bg4,
+    image: Bg6,
+  },
+  {
+    id: "7",
+    image: Bg7,
+  },
+  {
+    id: "8",
+    image: Bg8,
   },
 ];
 
@@ -71,11 +73,12 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id } = useParams();
-  const detail = useSelector((state) => state.home.filteredCards);
+  const cardDetail = useSelector((state) => state.home.card);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [selectedCard, setSelectedCard] = useState(cards[0]);
   const [flag, setFlag] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const handleCardDesignClick = (item) => {
     setSelectedCard(item);
@@ -100,20 +103,19 @@ const ProductDetails = () => {
   }
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     dispatch(getCardDetail(id));
-    console.log(isMobile)
+    console.log(isMobile);
   }, [id]);
 
-  const results = detail.filter((ele) => {
-    return ele.id === id;
-  });
+  // if (!cardDetail || Object.keys(cardDetail).length === 0) {
+  //   navigate("/");
+  // }
 
-  if (!results || results.length === 0) {
-    return null;
-  }
-
-  const { name, description, image, amountsFixed, amountsRange, validity } = results[0];
-
+  const { name, description, image, amountsFixed, amountsRange, validity } = cardDetail;
 
   const getValidationSchema = () => {
 
@@ -156,7 +158,7 @@ const ProductDetails = () => {
         </div>
         <div className={classes.rightTitle}>
           <h3>{`$${amountsRange ? amountsRange.minAmount : 0} - $${amountsRange ? amountsRange.maxAmount : 0}`}</h3>
-          <p>Válido hasta el {moment(new Date(Number(validity.endDate))).format('DD/MM/YYYY')}</p>
+          <p>Válido hasta el {moment(new Date(Number(validity?.endDate))).format('DD/MM/YYYY')}</p>
         </div>
       </div>
       <div className={classes.description}>
@@ -164,7 +166,7 @@ const ProductDetails = () => {
         <p className={classes.rightPara}>
           <span>Vigencia: {validity ? validity.description : ""}</span>
           <span>
-            <a className={classes.link}>Condiciones de uso</a>
+            <a className={classes.terms} onClick={() => setOpenModal(true)}>Condiciones de uso</a>
           </span>
         </p>
       </div>
@@ -174,9 +176,9 @@ const ProductDetails = () => {
           {/* <hr className={classes.divider} /> */}
           <h6 style={{ marginLeft: 10 }}>Selecciona diseño</h6>
           <div className={classes.cardDesign}>
-            <h5 className="title">{selectedCard.name}</h5>
-            <p className="validDate">{selectedCard.valid}</p>
-            <img src={selectedCard.image} alt={selectedCard.name} draggable={false} />
+            <h5 className="title">{name}</h5>
+            <p className="validDate">Válido hasta el {moment(new Date(Number(validity?.endDate))).format('DD/MM/YYYY')}</p>
+            <img src={selectedCard.image} alt={name} draggable={false} />
           </div>
           <div className={classes.cardDesignImages}>
             {cards.map((item, ind) =>
@@ -198,7 +200,8 @@ const ProductDetails = () => {
               name: "",
               email: "",
               celular: "",
-              friendGift: false,
+              isGift: false,
+              isScheduled: false,
               para: "",
               friendEmail: "",
               mensaje: "",
@@ -207,125 +210,192 @@ const ProductDetails = () => {
             validationSchema={getValidationSchema()}
             onSubmit={handleSubmit}
           >
-            {({ errors, touched, values, isValid, setFieldValue, handleChange }) => (
-              <Form>
-                <div className={classes.prices}>
-                  {amountsFixed?.map((ele, ind) => (
-                    <Button key={ind} className={classNames(classes.price, ele == values.monto && 'active')} name="monto" onClick={handleMontoClick(ele, setFieldValue)}>
-                      ${ele}
-                    </Button>
-                  ))}
-                </div>
-                {amountsRange && <CustomOutlinedInput
-                  size="small"
-                  type="number"
-                  placeholder="Monto"
-                  value={values.monto}
-                  name="monto"
-                  label="Selecciona un monto"
-                  info={`De $${amountsRange ? amountsRange.minAmount : 0} hasta $${amountsRange ? amountsRange.maxAmount : 0}`}
-                  error={touched.monto && errors.monto}
-                  block
-                />}
-                <CustomOutlinedInput
-                  size="small"
-                  type="text"
-                  placeholder="Nombre y apellido"
-                  value={values.name}
-                  name="name"
-                  label="Información personal"
-                  error={touched.name && errors.name}
-                  block
-                />
-                <CustomOutlinedInput
-                  size="small"
-                  type="text"
-                  placeholder="Email"
-                  value={values.email}
-                  name="email"
-                  error={touched.email && errors.email}
-                  block
-                />
-                <CustomOutlinedInput
-                  size="small"
-                  type="text"
-                  placeholder="Celular"
-                  value={values.celular}
-                  name="celular"
-                  error={touched.celular && errors.celular}
-                  block
-                />
+            {({ errors, touched, values, isValid, setFieldValue, handleChange, setFieldTouched }) => {
+              useEffect(() => {
+                setFieldTouched("isGift", true);
+              }, [])
+              return (
+                <Form>
+                  <div className={classes.prices}>
+                    {amountsFixed?.map((ele, ind) => (
+                      <Button key={ind} className={classNames(classes.price, ele == values.monto && 'active')} name="monto" onClick={handleMontoClick(ele, setFieldValue)}>
+                        ${ele}
+                      </Button>
+                    ))}
+                  </div>
+                  {amountsRange && <>
+                    <h6>Selecciona un monto</h6>
+                    <CustomOutlinedInput
+                      size="small"
+                      type="number"
+                      value={values.monto}
+                      name="monto"
+                      label="Monto *"
+                      info={`De $${amountsRange ? amountsRange.minAmount : 0} hasta $${amountsRange ? amountsRange.maxAmount : 0}`}
+                      error={touched.monto && errors.monto}
+                      block
+                    />
+                  </>}
+                  <h6>Información personal</h6>
+                  <CustomOutlinedInput
+                    size="small"
+                    type="text"
+                    value={values.name}
+                    name="name"
+                    label="Nombre y apellido *"
+                    error={touched.name && errors.name}
+                    block
+                  />
+                  <CustomOutlinedInput
+                    size="small"
+                    type="text"
+                    label="Email *"
+                    value={values.email}
+                    name="email"
+                    error={touched.email && errors.email}
+                    block
+                  />
+                  <CustomOutlinedInput
+                    size="small"
+                    type="text"
+                    label="Celular *"
+                    value={values.celular}
+                    name="celular"
+                    error={touched.celular && errors.celular}
+                    block
+                  />
 
-                <Field type="checkbox" id="friendGift" name="friendGift" onChange={(e) => {
-                  handleChange(e)
-                  setFlag(e.target.checked);
-                }} />
-                <label className={classes.label} htmlFor="friendGift">Quiero enviar esta tarjeta como regalo</label>
-                {values.friendGift && (
-                  <>
-                    <CustomOutlinedInput
-                      size="small"
-                      type="text"
-                      placeholder="Para"
-                      label="Datos destinatario"
-                      value={values.para}
-                      name="para"
-                      error={touched.para && errors.para}
-                      block
-                    />
-                    <CustomOutlinedInput
-                      size="small"
-                      type="text"
-                      placeholder="Correo destinatario"
-                      value={values.friendEmail}
-                      name="friendEmail"
-                      error={touched.friendEmail && errors.friendEmail}
-                      block
-                    />
-                    <CustomOutlinedInput
-                      size="small"
-                      // type="text"
-                      placeholder="Mensaje personal (opcional)"
-                      value={values.mensaje}
-                      name="mensaje"
-                      error={touched.mensaje && errors.mensaje}
-                      block
-                      rows={6}
-                      multiline
-                    />
-                    <hr />
-                    <h6>Entrega</h6>
-                    <input type="radio" id="gift1" name="gift" />{" "}
-                    <label htmlFor="gift1">Enviar ahora</label>
-                    <br />
-                    <input type="radio" id="gift2" name="gift" />{" "}
-                    <label htmlFor="gift2">Agendar envio</label>
-                  </>
-                )}
-                <br />
-                <br />
-                <hr />
-                <Field type="checkbox" id="accept" name="accept" />
-                <label className={classes.label} htmlFor="accept">
-                  Acepto
-                </label> <a style={{ fontSize: 13 }}>Condiciones de uso</a>
-                <ErrorMessage
-                  component="p"
-                  name="accept"
-                  style={{ color: "red" }}
-                />
-                <br />
-                <Button color="primary" block type="submit" disabled={!isValid}>
-                  CONTINUAR
-                </Button>
-                <Link to="/">
-                  <p className={classes.submitText}>Regresar a tarjetas</p>
-                </Link>
-              </Form>
-            )}
+                  <Field type="checkbox" id="isGift" name="isGift">
+                    {({ field }) => (
+                      <FormControlLabel
+                        className={classes.label}
+                        checked={values.isGift}
+                        control={<Checkbox color="primary" size="small" onChange={(e) => {
+                          handleChange(e)
+                          setFlag(e.target.checked);
+                        }} />}
+                        label="Quiero enviar esta tarjeta como regalo"
+                        {...field}
+                      />
+                    )}
+                  </Field>
+                  {values.isGift && (
+                    <>
+                      <h6>Datos destinatario</h6>
+                      <CustomOutlinedInput
+                        size="small"
+                        type="text"
+                        label="Para *"
+                        value={values.para}
+                        name="para"
+                        error={touched.para && errors.para}
+                        block
+                      />
+                      <CustomOutlinedInput
+                        size="small"
+                        type="text"
+                        label="Correo destinatario *"
+                        value={values.friendEmail}
+                        name="friendEmail"
+                        error={touched.friendEmail && errors.friendEmail}
+                        block
+                      />
+                      <CustomOutlinedInput
+                        size="small"
+                        // type="text"
+                        label="Mensaje personal (opcional)"
+                        value={values.mensaje}
+                        name="mensaje"
+                        error={touched.mensaje && errors.mensaje}
+                        block
+                        rows={6}
+                        multiline
+                      />
+                      <hr />
+                      <h6>Entrega</h6>
+                      <Field type="radio" name="isScheduled" value={values.isScheduled}>
+                        {({ field }) => (
+                          <RadioGroup {...field} name={name} value={values.isScheduled}>
+                            <FormControlLabel
+                              className={classes.label}
+                              value={false} control={<Radio
+                                color="primary"
+                                size="small"
+                                onChange={() => {
+                                  setFieldValue('isScheduled', false);
+                                }}
+                              />} label={"Enviar ahora"} />
+                            <FormControlLabel
+                              className={classes.label}
+                              value={true} control={<Radio
+                                color="primary"
+                                size="small"
+                                onChange={() => {
+                                  setFieldValue('isScheduled', true);
+                                }} />} label={"Agendar envio"} />
+                          </RadioGroup>
+                        )}
+                      </Field>
+                      {values.isScheduled && (
+                        <Field type="text" name="scheduledDate" value={values.scheduledDate}>
+                          {({ field }) => (
+                            <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                              <DateTimePicker
+                                {...field}
+                                style={{ width: "100%" }}
+                                label="Select a date."
+                                format="yyyy-MM-dd hh:mm:ss"
+                                ampm={false}
+                                autoOk
+                                disablePast={true}
+                                inputVariant="outlined"
+                                margin="dense"
+                                value={values.scheduledDate}
+                                onChange={(date) => {
+                                  setFieldValue('scheduledDate', new Date(date).getTime())
+                                }}
+                              />
+                            </MuiPickersUtilsProvider>
+                          )}
+                        </Field>
+                      )}
+                    </>
+                  )}
+                  <br />
+                  <br />
+                  <hr />
+                  <Field type="checkbox" id="accept" name="accept">
+                    {({ field }) => (
+                      <FormControlLabel
+                        className={classes.label}
+                        checked={values.accept}
+                        control={<Checkbox color="primary" size="small" onChange={(e) => {
+                          handleChange(e)
+                        }} />}
+                        label="Acepto"
+                        {...field}
+                      />
+                    )}
+                  </Field><a className={classes.terms} onClick={() => setOpenModal(true)}>Condiciones de uso</a>
+                  <ErrorMessage
+                    component="p"
+                    name="accept"
+                    style={{ color: "#BD2B46", fontSize: 12, paddingLeft: 20, margin: 0 }}
+                  />
+                  <br />
+                  <Button color="primary" block type="submit" disabled={!isValid}>
+                    CONTINUAR
+                  </Button>
+                  <Link to="/">
+                    <p className={classes.submitText}>Regresar a tarjetas</p>
+                  </Link>
+                </Form>
+              )
+            }}
           </Formik>
         </div>
       </div>
+      <TermsOfUseModal open={openModal} onClose={() => setOpenModal(false)} />
     </div>
   );
 };

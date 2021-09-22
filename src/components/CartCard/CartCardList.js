@@ -68,7 +68,7 @@ const CartCardList = ({ item }) => {
       <div className={classes.cardInfo}>
         <p className={classes.title}>Tarjeta de regalo</p>
         <p className={classes.subTitle}>{item.nameGift}</p>
-        {item.friendGift && <>
+        {item.isGift && <>
           {item.para && <p className={classes.descTitle}>Para: {item.para}</p>}
         </>}
       </div>

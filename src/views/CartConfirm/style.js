@@ -4,9 +4,9 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     display: "flex",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("sm")]: {
       overflowX: "hidden",
-      width: "100vw",
+      // width: "100",
       margin: 0,
       flexDirection: "column",
     },
@@ -16,10 +16,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     "& > div": {
       marginLeft: 15,
-    },
-    "& svg": {
-      // color: theme.palette.primary
-      color: "#6200EE"
     },
     "& h3": {
       margin: 0,
@@ -35,16 +31,27 @@ const useStyles = makeStyles((theme) => ({
     width: "55%",
     minHeight: "calc(100vh - 200px)",
     paddingTop: 45,
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("md")]: {},
+    [theme.breakpoints.down("sm")]: {
       minHeight: "auto",
       width: "100%",
       padding: 30
+    },
+    [theme.breakpoints.down("xs")]: {
+      padding: 15
     },
   },
   leftBody: {
     width: "70%",
     marginLeft: "auto",
     marginRight: 60,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+      margin: "0 auto"
+    },
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+    },
   },
   leftTitle: {
     color: "#333",
@@ -60,71 +67,50 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     margin: "30px 0",
   },
-  input: {
-    height: 40,
-
-    "& input": {
-      padding: "10px 14px",
-    },
+  twoLeft: {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "5px 0 0 5px",
+      borderRight: "0.5px solid #0000003b",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderRight: "none"
+      },
+      "&:hover": {
+        borderRight: "1px solid #000000",
+      },
+      "&.Mui-focused": {
+        borderRight: `2px solid ${theme.palette.primary.main}`,
+      },
+    }
+  },
+  twoRight: {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "0 5px 5px 0",
+      // borderLeft: "0.5px solid #0000003b",
+      "& .MuiOutlinedInput-notchedOutline": {
+        borderLeft: "none"
+      },
+      "&:hover": {
+        borderLeft: "1px solid #000000",
+      },
+      "&.Mui-focused": {
+        borderLeft: `2px solid ${theme.palette.primary.main}`,
+      },
+    }
   },
   width100: {
     width: "100%"
   },
   nameInput: {
     flex: 0.7,
-    borderRadius: "5px 0 0 5px",
-    borderRight: "0.5px solid #0000003b",
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderRight: "none"
-    },
-    "&:hover": {
-      borderRight: "1px solid #000000",
-    },
-    "&.Mui-focused": {
-      borderRight: "2px solid #3f51b5",
-    },
   },
   cpInput: {
-    borderRadius: "0 5px 5px 0",
     flex: 0.3,
-    // borderLeft: "0.5px solid #0000003b",
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderLeft: "none"
-    },
-    "&:hover": {
-      borderLeft: "1px solid #000000",
-    },
-    "&.Mui-focused": {
-      borderLeft: "2px solid #3f51b5",
-    },
   },
   dateInput: {
     flex: 0.5,
-    borderRadius: "5px 0 0 5px",
-    borderRight: "0.5px solid #0000003b",
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderRight: "none"
-    },
-    "&:hover": {
-      borderRight: "1px solid #000000",
-    },
-    "&.Mui-focused": {
-      borderRight: "2px solid #3f51b5",
-    },
   },
   cvcInput: {
-    borderRadius: "0 5px 5px 0",
     flex: 0.5,
-    // borderLeft: "0.5px solid #0000003b",
-    "& .MuiOutlinedInput-notchedOutline": {
-      borderLeft: "none"
-    },
-    "&:hover": {
-      borderLeft: "1px solid #000000",
-    },
-    "&.Mui-focused": {
-      borderLeft: "2px solid #3f51b5",
-    },
   },
 
   finalBtn: {
@@ -138,11 +124,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
   },
   wiithButton: {
-    paddingRight: 0,
-    height: 40,
     width: "100%",
-    "& input": {
-      padding: "9.5px ​14px"
+    "& .MuiOutlinedInput-adornedEnd": {
+      paddingRight: 0
     }
   },
   applyButton: {
@@ -158,14 +142,24 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 30,
     background: " #F8F8F8 0% 0% no-repeat padding-box",
     [theme.breakpoints.down("md")]: {
+      paddingLeft: 30,
+      paddingTop: 30,
+    },
+    [theme.breakpoints.down("sm")]: {
       width: "100%",
       minHeight: "auto",
-      padding: "20px 30px"
+      padding: 30,
+    },
+    [theme.breakpoints.down("xs")]: {
+      padding: "20px 15px"
     },
   },
   rightBody: {
     width: "55%",
     [theme.breakpoints.down("md")]: {
+      width: "75%",
+    },
+    [theme.breakpoints.down("sm")]: {
       width: "100%",
     },
   },
@@ -200,9 +194,12 @@ const useStyles = makeStyles((theme) => ({
     // alignItems: "flex-end",
     // justifyItems: "space-between",
     // flexDirection: "column",
-    [theme.breakpoints.down("md")]: {
+    [theme.breakpoints.down("sm")]: {
       width: "100%",
-      padding: "10px 30px"
+      padding: 10,
+    },
+    [theme.breakpoints.down("xs")]: {
+      padding: 0
     },
   },
 }));

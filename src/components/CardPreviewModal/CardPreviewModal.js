@@ -29,13 +29,13 @@ const CardPreviewModal = ({ item, open, onClose }) => {
           <h5 className={classes.cardName}>{item.nameGift}</h5>
           <h3 className={classes.cardPrice}>${item.monto}</h3>
           <p className={classes.validDate}>{item.valid}</p>
-          <img className={classes.cardImg} src={item.image} />
+          <img className={classes.cardImg} src={item.cardImage} />
         </div>
         <div className={classes.dottedLine} />
         <div className={classes.cardBody}>
           <h5 className={classes.title}>De: {item.name}</h5>
           <p className={classes.text}>{item.email}</p>
-          {item.friendGift && <>
+          {item.isGift && <>
             <hr className={classes.divider} />
             <h5 className={classes.title}>Para: {item.para}</h5>
             <p className={classes.text}>{item.friendEmail}</p>

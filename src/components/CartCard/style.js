@@ -1,13 +1,20 @@
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
+  alert: {
+    margin: 5,
+
+    "& ul": {
+      margin: 0,
+    }
+  },
   root: {
     // width: "35vw",
     display: "flex",
     // alignItems: "start",
     justifyContent: "start",
     height: "auto",
-    marginTop: 40,
+    // marginTop: 40,
     marginBottom: 20,
     [theme.breakpoints.down("md")]: {
       width: "100%",
@@ -26,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   image: {
     width: 106,
     height: 70,
-    boxShadow: "2px 2px 10px -1px #00000042",
+    // boxShadow: "2px 2px 10px -1px #00000042",
     borderRadius: 5,
     [theme.breakpoints.down("sm")]: {
       width: "106",
@@ -61,8 +68,24 @@ const useStyles = makeStyles((theme) => ({
     fontSize: 12,
     lineHeight: 1.5,
   },
+  select: {
+    "& select": {
+      height: 20,
+      width: 60,
+      textAlign: "center",
+      padding: "5px 20px 5px 10px !important",
+      fontSize: 14,
+    },
+
+    "& option": {
+      textAlign: "left",
+    }
+  },
   amountContainer: {
-    width: 100,
+    width: 160,
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "space-around",
     textAlign: "center",
     [theme.breakpoints.down("sm")]: {
       width: "auto",
@@ -102,7 +125,7 @@ const useStyles = makeStyles((theme) => ({
   },
   btn: {
     backgroundColor: "#fff",
-    color: "#0078D7",
+    color: "#0078D7 !important",
     width: "auto",
     textTransform: "initial",
     padding: 10,
@@ -139,7 +162,8 @@ const useStyles = makeStyles((theme) => ({
     width: 90,
     height: 30,
     "& input": {
-      fontSize: 13
+      fontSize: 13,
+      padding: "7px 7px 7px 0",
     },
     "& p": {
       fontSize: 14
