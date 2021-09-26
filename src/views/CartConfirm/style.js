@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     "& h3": {
       margin: 0,
       fontSize: 20,
-      fontWeight: "bold"
+      fontWeight: "bold",
     },
     "& p": {
       margin: 0,
@@ -35,10 +35,10 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("sm")]: {
       minHeight: "auto",
       width: "100%",
-      padding: 30
+      padding: 30,
     },
     [theme.breakpoints.down("xs")]: {
-      padding: 15
+      padding: 15,
     },
   },
   leftBody: {
@@ -47,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 60,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
-      margin: "0 auto"
+      margin: "0 auto",
     },
     [theme.breakpoints.down("xs")]: {
       width: "100%",
@@ -57,22 +57,24 @@ const useStyles = makeStyles((theme) => ({
     color: "#333",
     fontSize: 20,
     fontWeight: "bold",
-    margin: "0 0 25px",
+    margin: 0,
     lineHeight: 2.2,
   },
-
+  marginY2: {
+    margin: "15px 0",
+  },
   twoInput: {
     width: "100%",
     display: "flex",
     alignItems: "center",
-    margin: "30px 0",
+    margin: "20px 0",
   },
   twoLeft: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "5px 0 0 5px",
       borderRight: "0.5px solid #0000003b",
       "& .MuiOutlinedInput-notchedOutline": {
-        borderRight: "none"
+        borderRight: "none",
       },
       "&:hover": {
         borderRight: "1px solid #000000",
@@ -80,14 +82,14 @@ const useStyles = makeStyles((theme) => ({
       "&.Mui-focused": {
         borderRight: `2px solid ${theme.palette.primary.main}`,
       },
-    }
+    },
   },
   twoRight: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "0 5px 5px 0",
       // borderLeft: "0.5px solid #0000003b",
       "& .MuiOutlinedInput-notchedOutline": {
-        borderLeft: "none"
+        borderLeft: "none",
       },
       "&:hover": {
         borderLeft: "1px solid #000000",
@@ -95,10 +97,10 @@ const useStyles = makeStyles((theme) => ({
       "&.Mui-focused": {
         borderLeft: `2px solid ${theme.palette.primary.main}`,
       },
-    }
+    },
   },
   width100: {
-    width: "100%"
+    width: "100%",
   },
   nameInput: {
     flex: 0.7,
@@ -126,14 +128,14 @@ const useStyles = makeStyles((theme) => ({
   wiithButton: {
     width: "100%",
     "& .MuiOutlinedInput-adornedEnd": {
-      paddingRight: 0
-    }
+      paddingRight: 0,
+    },
   },
   applyButton: {
     margin: 0,
     height: 40,
     width: 96,
-    zIndex: 5
+    zIndex: 5,
   },
   rightSide: {
     minHeight: "calc(100vh - 200px)",
@@ -151,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
       padding: 30,
     },
     [theme.breakpoints.down("xs")]: {
-      padding: "20px 15px"
+      padding: "20px 15px",
     },
   },
   rightBody: {
@@ -175,8 +177,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "baseline",
     justifyContent: "space-between",
     "& .total": {
-      fontSize: 20
-    }
+      fontSize: 20,
+    },
   },
   dottedLine: {
     margin: "0 5px",
@@ -199,7 +201,7 @@ const useStyles = makeStyles((theme) => ({
       padding: 10,
     },
     [theme.breakpoints.down("xs")]: {
-      padding: 0
+      padding: 0,
     },
   },
 }));

@@ -6,8 +6,10 @@ import { ThemeProvider } from "@material-ui/core";
 import routes from "routes";
 import theme from "theme";
 import { store } from "redux/store";
+import "animate.css";
 
 import "assets/scss/material-kit-react.scss?v=1.10.0";
+import "react-toastify/dist/ReactToastify.css";
 
 // pages for this product
 // import LoginPage from "views/LoginPage/LoginPage";
@@ -20,9 +22,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Provider store={store}>
-        {routing}
-      </Provider>
+      <Provider store={store}>{routing}</Provider>
     </ThemeProvider>
   );
 };

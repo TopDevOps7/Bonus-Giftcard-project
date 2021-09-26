@@ -1,7 +1,7 @@
 import { container, title } from "assets/jss/material-kit-react";
 import customCheckboxRadioSwitch from "assets/jss/material-kit-react/customCheckboxRadioSwitch";
 
-const basicsStyle = theme => ({
+const basicsStyle = (theme) => ({
   sections: {
     padding: "70px 0",
   },
@@ -11,8 +11,13 @@ const basicsStyle = theme => ({
     marginBottom: 50,
     paddingTop: 1,
     [theme.breakpoints.down("sm")]: {
-      marginTop: 0,
-    }
+      marginTop: 130,
+    },
+  },
+  hiddenContent: {
+    [theme.breakpoints.down("sm")]: {
+      marginTop: 82,
+    },
   },
   title: {
     ...title,
