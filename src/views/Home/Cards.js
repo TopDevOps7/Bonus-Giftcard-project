@@ -1,19 +1,23 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import classNames from "classnames";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Slider, makeStyles, Hidden, Box, Typography } from "@material-ui/core";
 
+import { Slider, makeStyles, Hidden, Box, Typography, useTheme, useMediaQuery } from "@material-ui/core";
+import Pagination from "@material-ui/lab/Pagination";
 import { Favorite, Fastfood, LocalPharmacy, EmojiNature, MovieFilter, Computer, Check } from "@material-ui/icons";
+
+import { css } from "@emotion/react";
+import PulseLoader from "react-spinners/PulseLoader";
 
 import GridItem from "components/Grid/GridItem";
 import GridContainer from "components/Grid/GridContainer";
 import Button from "components/CustomButtons/Button";
 import Card from "components/Card/Card";
 import CardBody from "components/Card/CardBody";
-import { filterByCategory, getCards, cleanFilters, filterByPrice } from "redux/actions/home";
+import { filterByCategory, getCards, cleanFilters, filterByPrice, changePage } from "redux/actions/home";
 
 import { cardTitle } from "assets/jss/material-kit-react";
 
@@ -30,6 +34,11 @@ const styles = (theme) => ({
     [theme.breakpoints.down("sm")]: {
       fontSize: 30,
     },
+  },
+  pagination: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   cardTitle: {
     ...cardTitle,
@@ -107,6 +116,11 @@ const styles = (theme) => ({
   },
 });
 
+const override = css`
+  display: block;
+  margin: 150px auto;
+`;
+
 const useStyles = makeStyles(styles);
 
 function valuetext(value) {
@@ -116,16 +130,24 @@ function valuetext(value) {
 export default function Cards() {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const { partnerId } = useParams();
+  const isXsMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const filterOptions = useSelector(({ home }) => home.filterOptions);
-  const cards = useSelector(({ home }) => {
+  const loading = useSelector(({ home }) => home.loading);
+  const pagination = useSelector(({ home }) => home.pagination);
+  // const storedPartnerId = useSelector(({ home }) => home.partnerId);
+
+  const { cards, count } = useSelector(({ home }) => {
     let filtered = home.cards
       .filter((x) => {
         let cats = x.categories;
-        let dup = cats.filter((cat) => home.filterOptions.categories.includes(cat.name));
-        return dup.length === home.filterOptions.categories.length;
+        let dup = cats.filter((cat) => filterOptions.categories.includes(cat.name));
+        return dup.length === filterOptions.categories.length;
       })
       .filter((x) => {
-        let range = home.filterOptions.price;
+        let range = filterOptions.price;
         if (!range?.length) return true;
         if (!x.amountsRange && !x.amountsFixed) return true;
         if (x.amountsRange) {
@@ -144,10 +166,12 @@ export default function Cards() {
         }
         return false;
       })
-      .filter((x) => new RegExp(home.filterOptions.filterString, "i").test(x.name));
-    return filtered;
+      .filter((x) => new RegExp(filterOptions.filterString, "i").test(x.name));
+    return {
+      count: Math.ceil(filtered.length / pagination.limit),
+      cards: filtered.splice((pagination.page - 1) * pagination.limit, pagination.limit),
+    };
   });
-
   const [value, setValue] = useState(filterOptions.price);
 
   const handleChange = (event, newValue) => {
@@ -158,8 +182,14 @@ export default function Cards() {
     return filterOptions.categories.includes(option);
   };
 
+  const handlePageChange = (evt, value) => {
+    // console.log(value);
+    dispatch(changePage(value));
+    window.scroll(0, isXsMobile ? 230 : 360);
+  };
+
   useEffect(() => {
-    dispatch(getCards());
+    dispatch(getCards(partnerId, navigate));
   }, []);
 
   useEffect(() => {
@@ -288,30 +318,70 @@ export default function Cards() {
       <div className={classes.content}>
         <GridContainer className={classes.cardAlign}>
           {cards.length !== 0 ? (
-            cards.map((item, i) => {
-              return (
-                <GridItem xs={12} sm={6} md={6} key={i}>
-                  <Link to={`/card/detail/${item.id}`}>
-                    <Card className={classes.textRight} id={item.id}>
-                      <img className={classes.imgCardTop} src={item.image} alt="Card-img-cap" />
-                      <CardBody className={classes.cardBody}>
-                        <h4 className={classes.cardTitle}>{item.name}</h4>
-                        <div className={classes.cardInfo}>
-                          {item.amountsRange !== null ? (
-                            <p
-                              className={classes.cardPrice}
-                            >{`$${item.amountsRange.minAmount} - $${item.amountsRange.maxAmount}`}</p>
-                          ) : (
-                            <p className={classes.cardPrice}>&nbsp;</p>
-                          )}
-                          <p className={classes.smallText}>Válido hasta {item.validity.description}</p>
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Link>
-                </GridItem>
-              );
-            })
+            <>
+              <PulseLoader color={"#ab71ff"} speedMultiplier={1} loading={loading} css={override} size={15} margin={10} />
+              {!loading && (
+                <>
+                  <GridItem xs={12} className={classes.pagination}>
+                    <Pagination
+                      count={count}
+                      page={pagination.page}
+                      color="primary"
+                      variant="outlined"
+                      shape="rounded"
+                      size={isXsMobile ? "small" : "medium"}
+                      onChange={handlePageChange}
+                      showFirstButton
+                      showLastButton
+                    />
+                  </GridItem>
+                  {cards.map((item, i) => {
+                    let to = `card/detail/${item.id}`;
+                    return (
+                      <GridItem xs={12} sm={6} md={6} key={i}>
+                        <Link to={to}>
+                          <Card className={classes.textRight} id={item.id}>
+                            <img
+                              className={classes.imgCardTop}
+                              src={item.image}
+                              alt="Card-img-cap"
+                              width="100%"
+                              draggable={false}
+                            />
+                            <CardBody className={classes.cardBody}>
+                              <h4 className={classes.cardTitle}>{item.name}</h4>
+                              <div className={classes.cardInfo}>
+                                {item.amountsRange !== null ? (
+                                  <p
+                                    className={classes.cardPrice}
+                                  >{`$${item.amountsRange.minAmount} - $${item.amountsRange.maxAmount}`}</p>
+                                ) : (
+                                  <p className={classes.cardPrice}>&nbsp;</p>
+                                )}
+                                <p className={classes.smallText}>Válido hasta {item.validity.description}</p>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Link>
+                      </GridItem>
+                    );
+                  })}
+                  <GridItem xs={12} className={classes.pagination}>
+                    <Pagination
+                      count={count}
+                      page={pagination.page}
+                      color="primary"
+                      variant="outlined"
+                      shape="rounded"
+                      size={isXsMobile ? "small" : "medium"}
+                      onChange={handlePageChange}
+                      showFirstButton
+                      showLastButton
+                    />
+                  </GridItem>
+                </>
+              )}
+            </>
           ) : (
             <Box display="flex" flexDirection="column" height="100%" width="100%" justifyContent="center">
               <Box textAlign="center">

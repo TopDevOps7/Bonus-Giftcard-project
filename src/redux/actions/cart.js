@@ -5,28 +5,31 @@ import { tokenConfig } from "./auth";
 import { loading, isError } from "utils/toast";
 import { isSuccess } from "utils/toast";
 
-export const addOrder = (value) => (dispatch) => {
+export const addOrder = (value, partnerId) => (dispatch) => {
   dispatch({
     type: ADD_ORDER,
     payload: value,
+    partnerId,
   });
 };
 
-export const editOrder = (value) => (dispatch) => {
+export const editOrder = (value, partnerId) => (dispatch) => {
   dispatch({
     type: EDIT_ORDER,
     payload: value,
+    partnerId,
   });
 };
 
-export const deleteOrder = (value) => (dispatch) => {
+export const deleteOrder = (value, partnerId) => (dispatch) => {
   dispatch({
     type: DELETE_ORDER,
     payload: value,
+    partnerId,
   });
 };
 
-export const confirmOrder = (amountCart, navigate) => async (dispatch, getState) => {
+export const confirmOrder = (amountCart, navigate, homeUrl, partnerId) => async (dispatch, getState) => {
   loading("Please wait a moment...");
   try {
     // Get ip address
@@ -46,7 +49,7 @@ export const confirmOrder = (amountCart, navigate) => async (dispatch, getState)
       amountCart,
       amountDiscount: 0.0,
       cart: {
-        items: getState().home.orders,
+        items: getState().home.data[partnerId ?? "noPartner"].orders,
       },
       createdAt: Date.now(),
       transactions: null,
@@ -56,7 +59,7 @@ export const confirmOrder = (amountCart, navigate) => async (dispatch, getState)
     const res = await axios.post(`${BACKEND_URL}Orders`, payload, tokenConfig());
     // console.log(payload, "---");
     isSuccess(res.data.message);
-    navigate("/cart/confirm");
+    navigate(`${homeUrl}/cart/confirm`.replace("//", "/"));
     dispatch({
       type: CONFIRM_ORDER,
       payload: getState().home.orders,

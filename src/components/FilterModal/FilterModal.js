@@ -155,7 +155,7 @@ const FilterModal = ({ open, onClose }) => {
             </Button>
 
             <Button color="primary" block style={{ marginTop: 30 }} onClick={onClose}>
-              APLICAR
+              MOSTRAR RESULTADOS
             </Button>
             <Button
               color="danger"

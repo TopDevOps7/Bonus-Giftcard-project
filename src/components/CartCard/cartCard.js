@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 
@@ -30,6 +31,7 @@ const CartCard = ({ item, index, setUpdate }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const theme = useTheme();
+  const { partnerId } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [editable, setEditable] = useState(false);
@@ -64,9 +66,9 @@ const CartCard = ({ item, index, setUpdate }) => {
   const onSubmit = async (values) => {
     const { monto, para, mensaje } = values;
     if (itm.isGift) {
-      dispatch(editOrder({ index, order: { ...itm, amount: monto, toName: para, toMessage: mensaje } }));
+      dispatch(editOrder({ index, order: { ...itm, amount: monto, toName: para, toMessage: mensaje } }, partnerId));
     } else {
-      dispatch(editOrder({ index, order: { ...itm, amount: monto } }));
+      dispatch(editOrder({ index, order: { ...itm, amount: monto } }, partnerId));
     }
     setEditable(false);
     setUpdate();
@@ -90,7 +92,11 @@ const CartCard = ({ item, index, setUpdate }) => {
     if (amountsRange) {
       validation = {
         ...validation,
-        monto: Yup.number().integer().min(amountsRange.minAmount).max(amountsRange.maxAmount).required(),
+        monto: Yup.number()
+          .integer()
+          .min(amountsRange.minAmount, `El monto debe ser mayor o igual que ${amountsRange.minAmount}.`)
+          .max(amountsRange.maxAmount, `El monto debe ser menor o igual a ${amountsRange.maxAmount}.`)
+          .required(),
       };
     }
     if (itm.isGift) {
@@ -250,6 +256,9 @@ const CartCard = ({ item, index, setUpdate }) => {
                           error={touched.para && Boolean(errors.para)}
                           value={values.para}
                           name="para"
+                          inputProps={{
+                            maxLength: 60,
+                          }}
                           onChange={handleChange}
                           labelWidth={100}
                         />
@@ -269,6 +278,9 @@ const CartCard = ({ item, index, setUpdate }) => {
                           error={touched.mensaje && Boolean(errors.mensaje)}
                           value={values.mensaje}
                           name="mensaje"
+                          inputProps={{
+                            maxLength: 500,
+                          }}
                           onChange={handleChange}
                           labelWidth={60}
                         />
@@ -366,7 +378,7 @@ const CartCard = ({ item, index, setUpdate }) => {
             <DeleteConfirmModal
               open={openDeleteModal}
               onClose={() => setOpenDeleteModal(false)}
-              onOk={() => dispatch(deleteOrder({ index, id: itm.id }))}
+              onOk={() => dispatch(deleteOrder({ index, id: itm.id }, partnerId))}
             />
           </div>
         </Form>

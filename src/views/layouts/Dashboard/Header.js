@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { Badge, withStyles, makeStyles } from "@material-ui/core";
 import GridItem from "components/Grid/GridItem";
@@ -43,9 +43,10 @@ const Header = () => {
   const classes = useStyle();
   const dispatch = useDispatch();
   // const theme = useTheme();
+  const { partnerId } = useParams();
 
-  const orders = useSelector((state) => state.home.orders);
-
+  let orders = useSelector((state) => state.home.data[partnerId ?? "noPartner"]?.orders);
+  orders = orders ?? [];
   const [filterString, setFilterString] = useState("");
 
   const handleChangeFilterString = (e) => {
@@ -57,6 +58,11 @@ const Header = () => {
       dispatch(filterByNameAndDescription(filterString));
     }
   };
+
+  let cartUrl = "/cart";
+  if (partnerId) {
+    cartUrl = `/${partnerId}/cart`;
+  }
 
   return (
     <>
@@ -71,7 +77,7 @@ const Header = () => {
                 <AccountCircleIcon style={{ color: "#000" }} />
               </Button>
               <StyledBadge badgeContent={orders.length} color="secondary">
-                <Link to="/cart">
+                <Link to={cartUrl}>
                   <Button className={classes.button} justIcon color="transparent" style={{ marginRight: 10 }}>
                     <ShoppingCartIcon style={{ color: "#000" }} />
                   </Button>

@@ -5,37 +5,85 @@ import axios from "axios";
 import { tokenConfig } from "./auth";
 
 import {
+  GET_CARDS_REQUEST,
   GET_CARDS,
+  GET_CARDS_ERROR,
+  GET_CARD_DETAIL_REQUEST,
   GET_CARD_DETAIL,
+  GET_CARD_DETAIL_ERROR,
   FILTER_CARDS_BY_CATEGORY,
   FILTER_CARDS_BY_NAME,
   CLEAN_FILTERS,
   FILTER_CARDS_BY_PRICE,
+  CHANGE_PAGE,
 } from "../actionTypes";
 
-export const getCards = () => (dispatch, getState) => {
+export const getCards = (partnerId, navigate) => (dispatch, getState) => {
+  dispatch({
+    type: GET_CARDS_REQUEST,
+  });
+  let apiUrl = `${BACKEND_URL}Giftcards`;
+  if (partnerId) {
+    apiUrl = `${BACKEND_URL}Catalog/${partnerId}`;
+  }
   axios
-    .get(`${BACKEND_URL}Giftcards`, tokenConfig(getState))
+    .get(apiUrl, tokenConfig(getState))
     .then((res) => {
+      let payload = res.data;
+      if (partnerId) {
+        payload = res.data.partner.catalog.giftcards;
+      }
       dispatch({
         type: GET_CARDS,
-        payload: res.data,
-      });
-    })
-    .catch((error) => console.log(error));
-};
-
-export const getCardDetail = (cardId) => (dispatch, getState) => {
-  axios
-    .get(`${BACKEND_URL}Giftcards/${cardId}`, tokenConfig(getState))
-    .then((res) => {
-      dispatch({
-        type: GET_CARD_DETAIL,
-        payload: res.data,
+        payload,
+        partnerId,
       });
     })
     .catch((error) => {
       console.log(error);
+      dispatch({
+        type: GET_CARDS_ERROR,
+      });
+      navigate("404");
+    });
+};
+
+export const getCardDetail = (cardId, partnerId, navigate) => (dispatch, getState) => {
+  dispatch({
+    type: GET_CARD_DETAIL_REQUEST,
+  });
+  let apiUrl = `${BACKEND_URL}Giftcards/${cardId}`;
+  if (partnerId) {
+    apiUrl = `${BACKEND_URL}Catalog/${partnerId}/${cardId}`;
+  }
+  axios
+    .get(apiUrl, tokenConfig(getState))
+    .then((res) => {
+      let payload = res.data;
+      if (partnerId) {
+        payload = res.data.partner.catalog.giftcards;
+        if (payload.length > 0) {
+          payload = payload[0];
+        } else {
+          payload = {};
+        }
+      }
+      dispatch({
+        type: GET_CARD_DETAIL,
+        payload,
+        partnerId,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      if (partnerId) {
+        navigate(`/${partnerId}/404`);
+      } else {
+        navigate("/404");
+      }
+      dispatch({
+        type: GET_CARD_DETAIL_ERROR,
+      });
     });
 };
 
@@ -76,6 +124,12 @@ export const filterByPrice = (price) => (dispatch, getState) => {
   dispatch({
     type: FILTER_CARDS_BY_PRICE,
     price,
-    filteredCards: allCards,
+  });
+};
+
+export const changePage = (page) => (dispatch) => {
+  dispatch({
+    type: CHANGE_PAGE,
+    payload: page,
   });
 };

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classNames from "classnames";
-// import { Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   // useMediaQuery, useTheme,
@@ -18,10 +18,11 @@ import useStyles from "./style";
 
 const Confirm = () => {
   const classes = useStyles();
+  const { partnerId } = useParams();
   // const dispatch = useDispatch();
   // const theme = useTheme();
   // const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const orders = useSelector((state) => state.home.orders);
+  const orders = useSelector((state) => state.home.data[partnerId ?? "noPartner"].orders);
   const [success, setSuccess] = useState(false);
 
   // const [state, setState] = useState({});

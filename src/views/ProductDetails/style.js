@@ -57,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     marginRight: 5,
     "& span": {
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
   },
   cardDesign: {
     marginLeft: 15,
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
     width: 338,
     "& img": {
       width: 338,
-      height: 218
+      height: 218,
     },
     "& .title": {
       position: "absolute",
@@ -102,6 +102,12 @@ const useStyles = makeStyles((theme) => ({
       marginLeft: 0,
     },
   },
+  field: {
+    margin: "10px 0",
+  },
+  countryList: {
+    ...theme.typography.body1,
+  },
   cardDesignImage: {
     width: 50,
     height: 37,
@@ -112,17 +118,15 @@ const useStyles = makeStyles((theme) => ({
       cursor: "default",
       border: "1px solid #444",
       borderRadius: 5,
-    }
+    },
   },
   description: {
     marginTop: -70,
-    display: 'flex',
+    display: "flex",
     justifyContent: "space-around",
     flexWrap: "wrap",
     alignItems: "end",
-    [theme.breakpoints.down("xs")]: {
-
-    }
+    [theme.breakpoints.down("xs")]: {},
   },
   rightPara: {
     width: "40%",
@@ -135,7 +139,7 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: "space-between",
     },
     "& span": {
-      fontSize: 12
+      fontSize: 12,
     },
   },
   leftPara: {
@@ -143,8 +147,8 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       width: "95%",
       marginTop: 5,
-      marginBottom: 15
-    }
+      marginBottom: 15,
+    },
   },
   terms: {
     fontSize: 13,
@@ -172,7 +176,7 @@ const useStyles = makeStyles((theme) => ({
     width: "40%",
     // textAlign: "center",
     "& h3": {
-      fontWeight: 'bold',
+      fontWeight: "bold",
       fontSize: 40,
     },
     [theme.breakpoints.down("xs")]: {
@@ -196,8 +200,8 @@ const useStyles = makeStyles((theme) => ({
     // marginTop: -50,
     "& h3": {
       fontSize: 34,
-      fontWeight: 'bold',
-      marginBottom: 0
+      fontWeight: "bold",
+      marginBottom: 0,
     },
     width: "30%",
     [theme.breakpoints.down("xs")]: {
@@ -229,8 +233,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: 10,
     "&.active": {
       color: "#FFFFFF",
-      boxShadow: "0 14px 26px -12px rgb(153 153 153 / 42%), 0 4px 23px 0px rgb(0 0 0 / 12%), 0 8px 10px -5px rgb(153 153 153 / 20%)",
-      backgroundColor: "#999999"
+      boxShadow:
+        "0 14px 26px -12px rgb(153 153 153 / 42%), 0 4px 23px 0px rgb(0 0 0 / 12%), 0 8px 10px -5px rgb(153 153 153 / 20%)",
+      backgroundColor: "#999999",
     },
     [theme.breakpoints.down("sm")]: {
       width: 70,
@@ -257,7 +262,7 @@ const useStyles = makeStyles((theme) => ({
   },
   submitText: {
     color: "#00000099",
-    marginTop: 20
+    marginTop: 20,
   },
   container,
   title: {

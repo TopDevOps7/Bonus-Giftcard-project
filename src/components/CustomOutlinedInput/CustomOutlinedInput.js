@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 // nodejs library to set properties for components
 import PropTypes from "prop-types";
 // nodejs library that concatenates classes
@@ -12,17 +12,7 @@ import styles from "assets/jss/material-kit-react/components/customOutlinedInput
 
 const useStyles = makeStyles(styles);
 
-const CustomOutlinedInput = ({
-  type,
-  value,
-  error,
-  name,
-  info,
-  className,
-  block,
-  id,
-  ...rest
-}) => {
+const CustomOutlinedInput = ({ type, value, error, name, info, className, maxLength, block, id, ...rest }) => {
   const classes = useStyles();
   classes;
   return (
@@ -37,8 +27,9 @@ const CustomOutlinedInput = ({
             {...field}
             error={Boolean(error)}
             helperText={error}
+            inputProps={{ maxLength }}
             {...rest}
-          // size="small"
+            // size="small"
           />
         )}
       </Field>
@@ -56,6 +47,7 @@ CustomOutlinedInput.propTypes = {
   error: PropTypes.string,
   block: PropTypes.bool,
   name: PropTypes.string,
+  maxLength: PropTypes.number,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 

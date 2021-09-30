@@ -1,6 +1,6 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import classNames from "classnames";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   useMediaQuery,
@@ -11,7 +11,7 @@ import { Home } from "@material-ui/icons";
 import Button from "components/CustomButtons/Button";
 import CartCard from "components/CartCard/cartCard";
 
-import { getCards } from "redux/actions/home";
+// import { getCards } from "redux/actions/home";
 import { confirmOrder } from "redux/actions/cart";
 
 import useStyles from "./style";
@@ -20,9 +20,11 @@ const Cart = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { partnerId } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const orders = useSelector((state) => state.home.orders);
+  let orders = useSelector((state) => state.home.data[partnerId ?? "noPartner"]?.orders);
+  orders = orders ?? [];
   const [updateFlag, setUpdateFlag] = useState(0);
 
   const getTotal = () => {
@@ -33,14 +35,18 @@ const Cart = () => {
     return total;
   };
 
+  let homeUrl = "/";
+  if (partnerId) {
+    homeUrl += partnerId;
+  }
+
   const handleConfirm = () => {
-    dispatch(confirmOrder(getTotal(), navigate));
+    dispatch(confirmOrder(getTotal(), navigate, homeUrl, partnerId));
   };
 
-  useEffect(() => {
-    dispatch(getCards());
-  }, []);
-
+  // useEffect(() => {
+  //   dispatch(getCards());
+  // }, []);
   return (
     <div className={classes.root}>
       {orders.length > 0 && (
@@ -104,12 +110,12 @@ const Cart = () => {
                 FINALIZAR COMPRA
               </Button>
               {!isMobile && (
-                <Link to="/">
+                <Link to={homeUrl}>
                   <p className={classes.finalPara}>Seguir comprando</p>
                 </Link>
               )}
               {isMobile && (
-                <Link to="/">
+                <Link to={homeUrl}>
                   <Button className={classes.finalBtn}>Seguir comprando</Button>
                 </Link>
               )}
@@ -121,7 +127,7 @@ const Cart = () => {
         <div style={{ flex: 1, textAlign: "center" }}>
           <h3>Tu carrito de compras está vacío.</h3>
           <div>
-            <Link to="/">
+            <Link to={homeUrl}>
               <Button color="primary">
                 <Home /> Seguir comprando
               </Button>

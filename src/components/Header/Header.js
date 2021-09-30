@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // nodejs library to set properties for components
@@ -49,6 +49,7 @@ const Header = (props) => {
   const classes = useStyles();
   const location = useLocation();
   const theme = useTheme();
+  const { partnerId } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mobileOpen, setMobileOpen] = useState(false);
   // const [anchorEl, setAnchorEl] = useState(null);
@@ -96,22 +97,26 @@ const Header = (props) => {
     // rightList
   } = props;
 
+  let homeUrl = "/";
+  if (partnerId) {
+    homeUrl += partnerId;
+  }
+
   const appBarClasses = classNames({
     [classes.appBar]: true,
     [classes[color]]: color,
     [classes.absolute]: absolute,
     [classes.fixed]: fixed,
-    [classes.hiddenAppBar]: location.pathname !== "/",
+    [classes.hiddenAppBar]: location.pathname !== homeUrl,
   });
   const brandComponent = <Button className={classes.title}>{brand}</Button>;
-
   return (
     <>
       <AppBar className={appBarClasses}>
         <div className={classes.container}>
           <div className={classNames(classes.mobileVersion)}>
-            <Link to="/">
-              <img src={logo} className={classes.logo} alt="logo" />
+            <Link to={homeUrl}>
+              <img src={logo} className={classes.logo} alt="logo" draggable={false} />
             </Link>
             <Toolbar disableGutters className={classNames("cardBanner")} style={{ margin: "auto" }}>
               {leftLinks !== undefined ? brandComponent : null}
@@ -122,7 +127,7 @@ const Header = (props) => {
                   </Hidden>
                 ) : (
                   <>
-                    {location.pathname === "/" && !isMobile && (
+                    {location.pathname === homeUrl && !isMobile && (
                       <GridContainer style={{ width: "100%", paddingRight: 30 }}>
                         <GridItem xs={12} sm={12} md={12}>
                           <FormControl fullWidth variant="outlined" size="medium">
@@ -205,7 +210,7 @@ const Header = (props) => {
           </Hidden> */}
             </Toolbar>
           </div>
-          {location.pathname === "/" && isMobile && (
+          {location.pathname === homeUrl && isMobile && (
             <div className={classNames(classes.mobileSearch, "cardBanner")}>
               <OutlinedInput
                 // margin="dense"
