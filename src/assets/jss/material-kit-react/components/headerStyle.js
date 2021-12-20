@@ -17,7 +17,7 @@ const headerStyle = (theme) => ({
     display: "flex",
     border: "0",
     borderRadius: "3px",
-    padding: "40px 0 0",
+    padding: "20px 0 15px",
     color: "#555",
     width: "100%",
     backgroundColor: "#fff",
@@ -27,7 +27,6 @@ const headerStyle = (theme) => ({
     flexFlow: "row nowrap",
     justifyContent: "flex-start",
     position: "relative",
-    height: 145,
     zIndex: "unset",
     [theme.breakpoints.down("sm")]: {
       padding: 0,
@@ -55,6 +54,40 @@ const headerStyle = (theme) => ({
     margin: "10px auto 0",
     padding: "0 15px",
   },
+  mobileSearchbar: {
+    width: "118%",
+    marginLeft: -25,
+    [theme.breakpoints.down("800")]: {
+      width: "119%",
+    },
+    [theme.breakpoints.down("700")]: {
+      width: "120%",
+    },
+    [theme.breakpoints.down("600")]: {
+      width: "121%",
+    },
+    [theme.breakpoints.down("500")]: {
+      width: "123%",
+    },
+    [theme.breakpoints.down("450")]: {
+      width: "125%",
+    },
+    [theme.breakpoints.down("400")]: {
+      width: "127%",
+    },
+    [theme.breakpoints.down("375")]: {
+      width: "128%",
+    },
+    [theme.breakpoints.down("350")]: {
+      width: "129%",
+    },
+    [theme.breakpoints.down("325")]: {
+      width: "130%",
+    },
+    [theme.breakpoints.down("300")]: {
+      width: "131%",
+    },
+  },
   searchWithFilterBtn: {
     width: "100%",
     borderRadius: 10,
@@ -76,6 +109,7 @@ const headerStyle = (theme) => ({
     // ...container,
     minHeight: "50px",
     flex: "1",
+    padding: "10px",
     alignItems: "center",
     justifyContent: "center",
     display: "flex",
@@ -90,12 +124,12 @@ const headerStyle = (theme) => ({
   logo: {
     position: "absolute",
     zIndex: 1,
-    left: 30,
-    top: 30,
-    width: "8%",
+    left: 0,
+    top: 5,
+    width: 100,
     [theme.breakpoints.down("sm")]: {
-      top: 15,
-      width: 90,
+      width: 80,
+      top: 10,
     },
   },
   title: {
@@ -158,7 +192,8 @@ const headerStyle = (theme) => ({
   },
   white: {
     border: "0",
-    padding: "40px 0 0",
+    padding: "20px 0 15px",
+    height: "auto",
     marginBottom: "20px",
     color: "#555",
     backgroundColor: "#fff !important",

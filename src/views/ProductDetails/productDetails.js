@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import classNames from "classnames";
-import moment from "moment";
 import _ from "lodash";
 import { Form, Formik, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -12,25 +11,19 @@ import { getCardDetail } from "redux/actions/home";
 import { css } from "@emotion/react";
 import PulseLoader from "react-spinners/PulseLoader";
 
-import { Checkbox, FormControlLabel, RadioGroup, Radio } from "@material-ui/core";
-import MuiPhoneNumber from "components/material-ui-phone-input";
-
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import esLocale from "date-fns/locale/es";
-
-// import GridItem from "../../components/Grid/GridItem";
-// import GridContainer from "../../components/Grid/GridContainer";
+import MuiPhoneNumber from "components/material-ui-phone-input";
 import Button from "components/CustomButtons/Button";
-// import CustomInput from "components/CustomInput/CustomInput";
+import Button_ from "components/CustomButtons/Button_";
 import CustomOutlinedInput from "components/CustomOutlinedInput/CustomOutlinedInput";
 import TermsOfUseModal from "components/TermsOfUseModal/TermsOfUseModal";
-// import { validationSchema } from "utils";
+import LocationModal from "components/TermsOfUseModal/LocationModal";
 import { addOrder } from "redux/actions/cart";
 
-// import { phoneRegExp } from "utils";
 import useStyles from "./style";
-import { cards } from "./../../constants/index";
 
 const override = css`
   display: block;
@@ -39,28 +32,50 @@ const override = css`
 
 const ProductDetails = () => {
   const classes = useStyles();
-  // const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { id, partnerId } = useParams();
   const loading = useSelector(({ home }) => home.loading);
   const cardDetail = useSelector(({ home }) => home.card);
+  const cardsDesign = useSelector(({ home }) => home.cardsDesign);
   const [card, setCard] = useState({});
-  // const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [selectedCard, setSelectedCard] = useState(0);
+  const [selectedCard, setSelectedCard] = useState("");
+  const [amountDescription, setAmountDescription] = useState("");
+  const [selectedAmount, setSelectedAmount] = useState(-1);
+  const [selectedCardNum, setSelectedCardNum] = useState(0);
   const [flag, setFlag] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [openModal_, setOpenModal_] = useState(false);
 
-  const handleCardDesignClick = (item) => {
+  const handleCardDesignClick = (item, ind) => {
     setSelectedCard(item);
+    setSelectedCardNum(ind);
+  };
+
+  const handleIsGiftClick = (flag) => {
+    setFlag(flag);
+    const timer = setTimeout(() => {
+      flag && document.getElementById("para-button").focus();
+    }, 10);
+    return () => clearTimeout(timer);
   };
 
   const handleSubmit = async (values) => {
-    const { monto, name, email, celular, para, friendEmail, mensaje, isGift, isScheduled, scheduledDate } = values;
+    const { monto, para, celular, friendEmail, mensaje, isGift } = values;
+
+    let s = celular;
+    let s1 = s.substr(4, 3);
+    let s2 = s.substr(8, 3);
+    let s3 = s.substr(12, 4);
+    let phone = "";
+    s != "" ? (s == "+52" ? (phone = "") : (phone = "52" + s1 + s2 + s3)) : (phone = "");
+
+    let discountAmount = 0;
+    let discountType = "";
+    card.discount && ((discountAmount = card.discount.amount), (discountType = card.discount.type));
+    discountType == "amount" && (discountAmount = card.discount.amount / 100);
+
     const data = {
-      name,
-      email,
-      phone: celular,
       giftcard: {
         id: card.id,
         name: card.name,
@@ -73,16 +88,32 @@ const ProductDetails = () => {
         amountsRange: card.amountsRange,
         amountsFixed: card.amountsFixed,
       },
-      amount: monto,
+      amount: monto * 100,
+      discountAmount,
+      discountType,
+      selectedAmount,
+      description: amountDescription,
       style: selectedCard,
-      isScheduled,
-      scheduledDate: scheduledDate ?? null,
+      isScheduled: false,
+      scheduledDate: null,
       isGift,
       toName: para ?? null,
       toEmail: friendEmail ?? null,
       toMessage: mensaje ?? null,
+      toPhone: phone ?? null,
     };
+
+    let amountsFixedFlag = false;
+    amountsFixed.map((item) => {
+      monto == item.amount / 100 && (amountsFixedFlag = true);
+    });
+    amountsFixedFlag == false && (data.description = "");
+
+    flag == false && ((data.toName = ""), (data.toEmail = ""), (data.toMessage = ""), (data.toPhone = ""));
+
+    cardsDesign && cardsDesign.length != 0 && selectedCard == "" && (data.style = cardsDesign[selectedCardNum].name);
     dispatch(addOrder(data, partnerId));
+
     if (partnerId) {
       navigate(`/${partnerId}/cart`);
     } else {
@@ -100,10 +131,9 @@ const ProductDetails = () => {
 
   useEffect(() => {
     dispatch(getCardDetail(id, partnerId, navigate));
-    // console.log(isMobile);
   }, [id]);
 
-  const { name, description, image, amountsFixed, amountsRange, validity } = card;
+  const { name, description, locations, terms, image, imageDetail, amountsFixed, amountsRange, validity } = card;
 
   let homeUrl = "/";
   if (partnerId) {
@@ -111,22 +141,19 @@ const ProductDetails = () => {
   }
 
   const getValidationSchema = () => {
-    let validation = {
-      name: Yup.string().max(60).required("El Nombre y Apellido no puede estar vacío."),
-      email: Yup.string().email("El email debe ser válido.").max(60).required("El Email no puede estar vacío."),
-      celular: Yup.string()
-        .min(16, "El Celular debe ser válido.")
-        .max(16, "El Celular debe ser válido.")
-        .required("El celular no puede estar vacío."),
-      accept: Yup.bool().oneOf([true], "Tienes que aceptar los términos de uso."),
-    };
+    let validation;
+    let amountsFixed_ = [];
 
-    if (amountsFixed?.length) {
+    amountsFixed.map((item) => {
+      amountsFixed_.push(item.amount / 100);
+    });
+
+    if (amountsFixed_?.length) {
       validation = {
         ...validation,
         monto: Yup.number()
           .integer()
-          .oneOf(amountsFixed, "El importe es un campo obligatorio.")
+          .oneOf(amountsFixed_, "El importe es un campo obligatorio.")
           .required("El importe es un campo obligatorio."),
       };
     }
@@ -135,9 +162,9 @@ const ProductDetails = () => {
       validation = {
         ...validation,
         monto: Yup.number()
-          .integer()
-          .min(amountsRange.minAmount, `La cantidad debe ser mayor o igual a ${amountsRange.minAmount}.`)
-          .max(amountsRange.maxAmount)
+          .integer("monto no puede contener decimales")
+          .min(amountsRange.minAmount / 100, `La cantidad debe ser mayor o igual a ${amountsRange.minAmount / 100}.`)
+          .max(amountsRange.maxAmount / 100)
           .required("El importe es un campo obligatorio."),
       };
     }
@@ -150,6 +177,7 @@ const ProductDetails = () => {
           .email("El email debe ser válido.")
           .max(60)
           .required("El correo del destinatorio no puede estar vacío."),
+        celular: Yup.string().test("len", "El Celular debe ser válido.", (val) => !val || val.length == 3 || val.length == 16),
         mensaje: Yup.string().max(500),
       };
     }
@@ -164,28 +192,41 @@ const ProductDetails = () => {
       </div>
       {!loading && !_.isEmpty(card) && (
         <>
-          <div className={classes.background} style={{ backgroundImage: `url(${image})` }}>
-            {/* <img src={image} style={{ width: "100%" }} /> */}
-          </div>
+          <img className={classes.background} src={imageDetail ? imageDetail : image} style={{ width: "100%" }} />
+          {card.discount && (
+            <div className={classes.discount}>
+              <div className={classes.discount_div} dangerouslySetInnerHTML={{ __html: card.discount.legend }}></div>
+              <div className={classes.sub_discount}></div>
+            </div>
+          )}
           <div className={classes.header}>
             <div className={classes.leftTitle}>
               <h3>{name}</h3>
             </div>
             <div className={classes.rightTitle}>
-              <h3>{`$${amountsRange ? amountsRange.minAmount : 0} - $${amountsRange ? amountsRange.maxAmount : 0}`}</h3>
-              <p>Válido hasta el {moment(new Date(Number(validity?.endDate))).format("DD/MM/YYYY")}</p>
+              <h3>{`$${amountsRange ? amountsRange.minAmount / 100 : amountsFixed[0].amount / 100} - $${
+                amountsRange ? amountsRange.maxAmount / 100 : amountsFixed[amountsFixed.length - 1].amount / 100
+              }`}</h3>
             </div>
           </div>
           <div className={classes.description}>
-            <p className={classes.leftPara}>{description}</p>
-            <p className={classes.rightPara}>
-              <span>Vigencia: {validity ? validity.description : ""}</span>
-              <span>
-                <a className={classes.terms} onClick={() => setOpenModal(true)}>
-                  Condiciones de uso
-                </a>
-              </span>
+            <p className={classes.leftPara}>
+              <div dangerouslySetInnerHTML={{ __html: description }} />
             </p>
+            {locations ? (
+              <p className={classes.rightPara}>
+                <span>Vigencia: {validity ? validity.description : ""}</span>
+                <span>
+                  <a className={classes.terms} onClick={() => setOpenModal_(true)}>
+                    Ver ubicaciones
+                  </a>
+                </span>
+              </p>
+            ) : (
+              <p className={classes.rightPara_}>
+                <span>Vigencia: {validity ? validity.description : ""}</span>
+              </p>
+            )}
           </div>
           <hr className={classes.divider} style={{ margin: "5px 15px" }} />
           <div className={classes.pBody}>
@@ -194,57 +235,62 @@ const ProductDetails = () => {
               <h6 style={{ marginLeft: 10 }}>Selecciona diseño</h6>
               <div className={classes.cardDesign}>
                 <h5 className="title">{name}</h5>
-                <p className="validDate">Válido hasta el {moment(new Date(Number(validity?.endDate))).format("DD/MM/YYYY")}</p>
-                <img src={cards[selectedCard]} alt={name} draggable={false} />
+                <img
+                  src={cardsDesign && cardsDesign.length != 0 && cardsDesign[selectedCardNum].path}
+                  alt={name}
+                  draggable={false}
+                />
               </div>
               <div className={classes.cardDesignImages}>
-                {cards.map((img, ind) => (
-                  <img
-                    className={classNames(classes.cardDesignImage, ind === selectedCard && "active")}
-                    src={img}
-                    alt="card-image"
-                    key={ind}
-                    draggable={false}
-                    onClick={() => handleCardDesignClick(ind)}
-                  />
-                ))}
+                {cardsDesign &&
+                  cardsDesign.length != 0 &&
+                  cardsDesign.map((img, ind) => (
+                    <img
+                      className={classNames(classes.cardDesignImage, ind === selectedCardNum && "active")}
+                      src={img.path}
+                      alt="card-image"
+                      key={ind}
+                      draggable={false}
+                      onClick={() => handleCardDesignClick(img.name, ind)}
+                    />
+                  ))}
               </div>
             </div>
             <div className={classes.rightSide}>
               <Formik
                 initialValues={{
                   monto: 0,
-                  name: "",
-                  email: "",
-                  celular: "",
                   isGift: false,
                   isScheduled: false,
                   para: "",
+                  celular: "",
                   friendEmail: "",
                   mensaje: "",
-                  accept: false,
                 }}
                 validationSchema={getValidationSchema()}
                 onSubmit={handleSubmit}
               >
-                {({ errors, touched, values, isValid, setFieldValue, handleChange, setFieldTouched }) => {
-                  useEffect(() => {
-                    setFieldTouched("isGift", true);
-                  }, []);
+                {({ errors, touched, values, setFieldValue, handleChange }) => {
                   return (
                     <Form>
                       <div className={classes.prices}>
                         {amountsFixed?.map((ele, ind) => (
-                          <Button
+                          <Button_
                             key={ind}
-                            className={classNames(classes.price, ele == values.monto && "active")}
+                            className={classNames(
+                              classes.price,
+                              (amountsRange ? ele.amount / 100 == values.monto : selectedAmount == ind) && classes.price_active
+                            )}
                             name="monto"
                             onClick={() => {
-                              setFieldValue("monto", ele);
+                              setFieldValue("monto", ele.amount / 100);
+                              setAmountDescription(ele.description ? ele.description : "");
+                              setSelectedAmount(ind);
                             }}
                           >
-                            ${ele}
-                          </Button>
+                            {ele.description ? ele.description : ""}
+                            {ele.description ? <br /> : ""}${ele.amount / 100}
+                          </Button_>
                         ))}
                       </div>
                       {!amountsRange && (
@@ -263,16 +309,13 @@ const ProductDetails = () => {
                             value={values.monto}
                             name="monto"
                             label="Monto *"
-                            info={`De $${amountsRange ? amountsRange.minAmount : 0} hasta $${
-                              amountsRange ? amountsRange.maxAmount : 0
+                            info={`De $${amountsRange ? amountsRange.minAmount / 100 : 0} hasta $${
+                              amountsRange ? amountsRange.maxAmount / 100 : 0
                             }`}
                             onChange={(e) => {
                               const { value } = e.target;
-                              // if (amountsRange.minAmount >= value) {
-                              //   return setFieldValue("monto", amountsRange.minAmount);
-                              // }
-                              if (amountsRange.maxAmount <= Number(value)) {
-                                return setFieldValue("monto", amountsRange.maxAmount);
+                              if (amountsRange.maxAmount / 100 <= Number(value)) {
+                                return setFieldValue("monto", amountsRange.maxAmount / 100);
                               }
                               setFieldValue("monto", value);
                             }}
@@ -281,47 +324,21 @@ const ProductDetails = () => {
                           />
                         </>
                       )}
-                      <h6>Información personal</h6>
-                      <CustomOutlinedInput
-                        size="small"
-                        type="text"
-                        value={values.name}
-                        name="name"
-                        label="Nombre y apellido *"
-                        error={touched.name && errors.name}
-                        maxLength={60}
-                        block
-                      />
-                      <CustomOutlinedInput
-                        size="small"
-                        type="text"
-                        label="Email *"
-                        value={values.email}
-                        name="email"
-                        error={touched.email && errors.email}
-                        maxLength={60}
-                        block
-                      />
-                      <Field type="text" id="celular" name="celular">
-                        {({ field }) => (
-                          <MuiPhoneNumber
-                            {...field}
-                            size="small"
-                            label="Celular *"
-                            variant="outlined"
-                            value={values.celular}
-                            onChange={handleChange("celular")}
-                            countryCodeEditable={false}
-                            onlyCountries={["mx"]}
-                            name="celular"
-                            error={touched.celular && Boolean(errors.celular)}
-                            margin="dense"
-                            defaultCountry={"mx"}
-                            helperText={touched.celular && errors.celular}
-                            style={{ width: "100%" }}
-                          />
-                        )}
-                      </Field>
+                      {card.discount && (
+                        <div>
+                          {card.discount.type == "amount" ? (
+                            <div className={classes.pink_area}>
+                              a pagar: ${values.monto != 0 ? values.monto - card.discount.amount / 100 : 0} (-$
+                              {card.discount.amount / 100})
+                            </div>
+                          ) : (
+                            <div className={classes.pink_area}>
+                              a pagar: ${values.monto - (values.monto / 100) * card.discount.amount} (-{card.discount.amount}%)
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <h6>¿Es regalo?</h6>
                       <Field type="checkbox" id="isGift" name="isGift">
                         {({ field }) => (
                           <FormControlLabel
@@ -333,7 +350,7 @@ const ProductDetails = () => {
                                 size="small"
                                 onChange={(e) => {
                                   handleChange(e);
-                                  setFlag(e.target.checked);
+                                  handleIsGiftClick(e.target.checked);
                                 }}
                               />
                             }
@@ -346,6 +363,7 @@ const ProductDetails = () => {
                         <>
                           <h6>Datos destinatario</h6>
                           <CustomOutlinedInput
+                            id="outlined-para-input"
                             size="small"
                             type="text"
                             label="Para *"
@@ -365,9 +383,28 @@ const ProductDetails = () => {
                             error={touched.friendEmail && errors.friendEmail}
                             block
                           />
+                          <Field type="text" id="celular" name="celular">
+                            {({ field }) => (
+                              <MuiPhoneNumber
+                                {...field}
+                                size="small"
+                                label="Mandar la tarjeta por Whatsapp"
+                                variant="outlined"
+                                value={values.celular}
+                                onChange={handleChange("celular")}
+                                countryCodeEditable={false}
+                                onlyCountries={["mx"]}
+                                name="celular"
+                                error={touched.celular && Boolean(errors.celular)}
+                                margin="dense"
+                                defaultCountry={"mx"}
+                                helperText={touched.celular && errors.celular}
+                                style={{ width: "100%" }}
+                              />
+                            )}
+                          </Field>
                           <CustomOutlinedInput
                             size="small"
-                            // type="text"
                             label="Mensaje personal (opcional)"
                             value={values.mensaje}
                             name="mensaje"
@@ -377,42 +414,6 @@ const ProductDetails = () => {
                             rows={6}
                             multiline
                           />
-                          <hr />
-                          <h6>Entrega</h6>
-                          <Field type="radio" name="isScheduled" value={values.isScheduled}>
-                            {({ field }) => (
-                              <RadioGroup {...field} name={name} value={values.isScheduled}>
-                                <FormControlLabel
-                                  className={classes.label}
-                                  value={false}
-                                  control={
-                                    <Radio
-                                      color="primary"
-                                      size="small"
-                                      onChange={() => {
-                                        setFieldValue("isScheduled", false);
-                                      }}
-                                    />
-                                  }
-                                  label={"Enviar ahora"}
-                                />
-                                <FormControlLabel
-                                  className={classes.label}
-                                  value={true}
-                                  control={
-                                    <Radio
-                                      color="primary"
-                                      size="small"
-                                      onChange={() => {
-                                        setFieldValue("isScheduled", true);
-                                      }}
-                                    />
-                                  }
-                                  label={"Agendar envio"}
-                                />
-                              </RadioGroup>
-                            )}
-                          </Field>
                           {values.isScheduled && (
                             <Field type="text" name="scheduledDate" value={values.scheduledDate}>
                               {({ field }) => (
@@ -441,37 +442,41 @@ const ProductDetails = () => {
                       <br />
                       <br />
                       <hr />
-                      <Field type="checkbox" id="accept" name="accept">
-                        {({ field }) => (
-                          <FormControlLabel
-                            className={classes.label}
-                            checked={values.accept}
-                            control={
-                              <Checkbox
-                                color="primary"
-                                size="small"
-                                onChange={(e) => {
-                                  handleChange(e);
-                                }}
-                              />
-                            }
-                            label="Acepto"
-                            {...field}
-                          />
-                        )}
-                      </Field>
-                      <a className={classes.terms} onClick={() => setOpenModal(true)}>
-                        Condiciones de uso
-                      </a>
-                      <ErrorMessage
-                        component="p"
-                        name="accept"
-                        style={{ color: "#BD2B46", fontSize: 12, paddingLeft: 20, margin: 0 }}
-                      />
                       <br />
-                      <Button color="primary" block type="submit" disabled={!isValid}>
+                      <Button
+                        id="para-button"
+                        color="primary"
+                        block
+                        type="submit"
+                        disabled={
+                          flag
+                            ? errors.monto == undefined &&
+                              errors.para == undefined &&
+                              errors.friendEmail == undefined &&
+                              errors.celular == undefined &&
+                              errors.mensaje == undefined
+                              ? false
+                              : true
+                            : errors.monto == undefined && values.monto > 0
+                            ? false
+                            : true
+                        }
+                        onClick={() => sessionStorage.setItem("session", "cart")}
+                      >
                         CONTINUAR
                       </Button>
+                      <br />
+                      <div className={classes.label_top}>
+                        <span className={classes.label_}>Al dar click aquí acepto los</span>
+                        <a
+                          className={classes.terms}
+                          onClick={() => {
+                            setOpenModal(true);
+                          }}
+                        >
+                          Términos y condiciones
+                        </a>
+                      </div>
                       <Link to={homeUrl}>
                         <p className={classes.submitText}>Regresar a tarjetas</p>
                       </Link>
@@ -481,7 +486,8 @@ const ProductDetails = () => {
               </Formik>
             </div>
           </div>
-          <TermsOfUseModal open={openModal} onClose={() => setOpenModal(false)} />
+          <TermsOfUseModal open={openModal} onClose={() => setOpenModal(false)} content={terms} />
+          <LocationModal open={openModal_} onClose={() => setOpenModal_(false)} content={locations} />
         </>
       )}
     </div>

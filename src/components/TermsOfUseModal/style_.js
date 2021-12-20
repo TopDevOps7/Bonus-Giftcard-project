@@ -25,6 +25,12 @@ const useStyles = makeStyles((theme) => ({
       padding: 20,
     },
   },
+  topScrollPaper: {
+    alignItems: "flex-start",
+  },
+  topPaperScrollBody: {
+    verticalAlign: "middle",
+  },
   close: {
     width: "100%",
     position: "relative",

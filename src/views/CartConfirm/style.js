@@ -2,8 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    maxWidth: 1080,
     width: "100%",
     display: "flex",
+    margin: "-35px auto",
     [theme.breakpoints.down("sm")]: {
       overflowX: "hidden",
       // width: "100",
@@ -27,9 +29,27 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 12,
     },
   },
+  Breadcrumb: {
+    display: "flex",
+    alignItems: "center",
+  },
+  MainBreadcrumb: {
+    fontSize: 12,
+    color: "#0078D7",
+  },
+  ArrowBreadcrumb: {
+    fontSize: 12,
+  },
+  SubBreadcrumb: {
+    fontSize: 12,
+  },
+  OrderIdTittle: {
+    textAlign: "right",
+    fontSize: 12,
+  },
   leftSide: {
-    width: "55%",
-    minHeight: "calc(100vh - 200px)",
+    width: "60%",
+    minHeight: "calc(100vh - 170px)",
     paddingTop: 45,
     [theme.breakpoints.down("md")]: {},
     [theme.breakpoints.down("sm")]: {
@@ -42,9 +62,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   leftBody: {
-    width: "70%",
+    width: "85%",
     marginLeft: "auto",
-    marginRight: 60,
+    marginRight: "5%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       margin: "0 auto",
@@ -69,6 +89,9 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     margin: "20px 0",
   },
+  cardMargin: {
+    margin: "20px 0",
+  },
   twoLeft: {
     "& .MuiOutlinedInput-root": {
       borderRadius: "5px 0 0 5px",
@@ -82,6 +105,9 @@ const useStyles = makeStyles((theme) => ({
       "&.Mui-focused": {
         borderRight: `2px solid ${theme.palette.primary.main}`,
       },
+    },
+    "& .MuiFormHelperText-root": {
+      letterSpacing: "-0.2px",
     },
   },
   twoRight: {
@@ -138,15 +164,10 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 5,
   },
   rightSide: {
-    minHeight: "calc(100vh - 200px)",
-    width: "45%",
-    paddingLeft: 40,
+    minHeight: "calc(100vh - 170px)",
+    width: "40%",
     paddingTop: 30,
     background: " #F8F8F8 0% 0% no-repeat padding-box",
-    [theme.breakpoints.down("md")]: {
-      paddingLeft: 30,
-      paddingTop: 30,
-    },
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       minHeight: "auto",
@@ -157,12 +178,12 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   rightBody: {
-    width: "55%",
-    [theme.breakpoints.down("md")]: {
-      width: "75%",
-    },
+    width: "90%",
+    paddingLeft: "10%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
+      paddingLeft: "1%",
+      paddingRight: "1%",
     },
   },
   rightTitle: {
@@ -203,6 +224,58 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       padding: 0,
     },
+  },
+
+  cc_logo: {
+    opacity: 0.35,
+  },
+
+  cc_logo_active: {
+    opacity: 1,
+  },
+
+  error_valid: {
+    color: "#2ECC40",
+  },
+
+  error_invalid: {
+    color: "#FF4136",
+  },
+
+  error_text: {
+    fontWeight: "bold",
+    marginTop: 10,
+    marginLeft: "8px",
+    display: "none",
+  },
+
+  error_text_: {
+    fontWeight: "bold",
+    marginTop: 10,
+    marginLeft: "8px",
+  },
+
+  cardNumber_input: {
+    width: "100%",
+    height: "40px",
+    borderColor: "#c6c6c6",
+    borderStyle: "solid",
+    borderRadius: "5px",
+    borderWidth: "1px",
+  },
+
+  cardNumber_input_: {
+    marginTop: "10px",
+    marginBottom: "8px",
+    marginLeft: "10px",
+    fontSize: "16px",
+    height: "20px",
+    borderColor: "#FFFFFF",
+    borderWidth: "0px",
+  },
+
+  align_center: {
+    textAlign: "center",
   },
 }));
 export default useStyles;

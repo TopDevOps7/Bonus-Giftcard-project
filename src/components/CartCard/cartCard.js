@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
@@ -25,7 +25,7 @@ import DeleteConfirmModal from "components/DeleteConfirmModal/DeleteConfirmModal
 import { deleteOrder, editOrder } from "redux/actions/cart";
 
 import useStyles from "./style";
-import { cards } from "./../../constants/index";
+import { useSelector } from "react-redux";
 
 const CartCard = ({ item, index, setUpdate }) => {
   const classes = useStyles();
@@ -38,64 +38,63 @@ const CartCard = ({ item, index, setUpdate }) => {
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [itm, setItm] = useState(item);
-  // const [open, setOpen] = useState(false);
+
+  const cardsDesign = useSelector(({ home }) => home.cardsDesign);
 
   const handleEditableClick = () => {
     setEditable(true);
   };
-
-  // const handelSaveClick = () => {
-
-  // }
 
   const handleOpenModal = (e) => {
     e.preventDefault();
     setOpenModal(true);
   };
 
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setItm({
-  //     ...itm,
-  //     [name]: value
-  //   })
-  // }
-
   const { amountsRange, amountsFixed } = itm.giftcard;
 
   const onSubmit = async (values) => {
-    const { monto, para, mensaje } = values;
+    const { monto, montoRange, para, mensaje } = values;
+    let monto_ = 0;
+    let description = "";
+    amountsRange
+      ? (monto_ = montoRange * 100)
+      : amountsFixed.map((el, ind) => {
+          monto == ind && ((monto_ = el.amount), (description = el.description));
+        });
+
     if (itm.isGift) {
-      dispatch(editOrder({ index, order: { ...itm, amount: monto, toName: para, toMessage: mensaje } }, partnerId));
+      dispatch(
+        editOrder(
+          {
+            index,
+            order: {
+              ...itm,
+              description,
+              selectedAmount: monto,
+              amount: monto_,
+              toName: para,
+              toMessage: mensaje,
+            },
+          },
+          partnerId
+        )
+      );
     } else {
-      dispatch(editOrder({ index, order: { ...itm, amount: monto } }, partnerId));
+      dispatch(editOrder({ index, order: { ...itm, description, selectedAmount: monto, amount: monto_ } }, partnerId));
     }
     setEditable(false);
     setUpdate();
   };
-
-  // const handleClick = (flag) => () => {
-  //   if (flag) {
-  //     return setItm({
-  //       ...itm,
-  //       "amount": Number(itm.amount) + 1
-  //     });
-  //   }
-  //   setItm({
-  //     ...itm,
-  //     "amount": Number(itm.amount) - 1
-  //   });
-  // }
 
   const getValidationSchema = () => {
     let validation = {};
     if (amountsRange) {
       validation = {
         ...validation,
-        monto: Yup.number()
+        montoRange: Yup.number()
           .integer()
-          .min(amountsRange.minAmount, `El monto debe ser mayor o igual que ${amountsRange.minAmount}.`)
-          .max(amountsRange.maxAmount, `El monto debe ser menor o igual a ${amountsRange.maxAmount}.`)
+          .min(amountsRange.minAmount / 100, `El monto debe ser mayor o igual que ${amountsRange.minAmount / 100}.`)
+          .max(amountsRange.maxAmount / 100, `El monto debe ser menor o igual a ${amountsRange.maxAmount / 100}.`)
           .required(),
       };
     }
@@ -119,7 +118,8 @@ const CartCard = ({ item, index, setUpdate }) => {
   return (
     <Formik
       initialValues={{
-        monto: itm.amount,
+        monto: itm.selectedAmount,
+        montoRange: itm.amount / 100,
         para: itm.toName,
         mensaje: itm.toMessage,
       }}
@@ -130,21 +130,7 @@ const CartCard = ({ item, index, setUpdate }) => {
         <Form>
           <div className={classes.alert}>
             <Collapse in={Boolean(Object.keys(errors).length)}>
-              <Alert
-                severity="error"
-                // action={
-                //   <IconButton
-                //     aria-label="close"
-                //     color="inherit"
-                //     size="small"
-                //     onClick={() => {
-                //       setOpen(false);
-                //     }}
-                //   >
-                //     <Close fontSize="inherit" />
-                //   </IconButton>
-                // }
-              >
+              <Alert severity="error">
                 <ul>
                   {Object.keys(errors).map((err, ind) => (
                     <li key={ind}>{errors[err]}</li>
@@ -155,7 +141,21 @@ const CartCard = ({ item, index, setUpdate }) => {
           </div>
           <div className={classes.root}>
             <div className={classes.imageContainer}>
-              <img src={cards[itm.style]} rel="nofollow" alt="Card image cap" className={classes.image} draggable={false} />
+              {cardsDesign &&
+                cardsDesign.length != 0 &&
+                cardsDesign.map((card, ind) => (
+                  <Fragment key={ind}>
+                    {card.name == itm.style && (
+                      <img
+                        src={cardsDesign && cardsDesign.length != 0 && cardsDesign[ind].path}
+                        rel="nofollow"
+                        alt="Card image cap"
+                        className={classes.image}
+                        draggable={false}
+                      />
+                    )}
+                  </Fragment>
+                ))}
               <a href="#" onClick={handleOpenModal}>
                 <Search fontSize="small" /> Vista previa
               </a>
@@ -168,46 +168,43 @@ const CartCard = ({ item, index, setUpdate }) => {
                 <div className={classes.amountContainer}>
                   {!editable && (
                     <>
-                      <p className={classes.count}>Cant : 1 </p>
-                      <p className={classes.price}>${itm.amount}</p>
+                      {itm.discountType == "" ? (
+                        <div className={classes.amountContainer_sub}>
+                          <p className={classes.count}>Cant : 1 </p>
+                          <p className={classes.price__}>${itm.amount / 100}</p>
+                        </div>
+                      ) : (
+                        <div className={classes.amountContainer_sub}>
+                          <p className={classes.count}>Cant : 1 </p>
+                          <p className={classes.price}>${itm.amount / 100}</p>
+                        </div>
+                      )}
+                      {itm.discountType == "amount" && itm.discountType != "" && (
+                        <p className={classes.price_}>${itm.amount / 100 - itm.discountAmount}</p>
+                      )}
+                      {itm.discountType == "percent" && itm.discountType != "" && (
+                        <p className={classes.price_}>${itm.amount / 100 - (itm.amount / 10000) * itm.discountAmount}</p>
+                      )}
                     </>
                   )}
                   {editable && (
                     <>
                       <p className={classes.count}>Cant : 1 </p>
-                      {/* <OutlinedInput
-              type="text"
-              className={classes.amountInput}
-              value={itm.amount}
-              name="amount"
-              onChange={handleChange}
-              startAdornment={
-                <InputAdornment position="start">
-                  <Button className={classes.amountControlBtn} color="primary" onClick={handleClick()}>-</Button>
-                </InputAdornment>
-              }
-              endAdornment={
-                <InputAdornment position="end">
-                  <Button className={classes.amountControlBtn} color="primary" onClick={handleClick(true)}>+</Button>
-                </InputAdornment>
-              }
-            /> */}
                       <Field type="number" name="monto" id="monto" value={values.monto}>
                         {({ field }) => (
                           <>
-                            {amountsRange && (
+                            {amountsFixed.length == 0 || amountsRange ? (
                               <OutlinedInput
                                 type="number"
                                 {...field}
                                 className={classes.priceInput}
-                                value={values.monto}
-                                error={touched.monto && Boolean(errors.monto)}
-                                name="monto"
+                                value={values.montoRange}
+                                error={touched.montoRange && Boolean(errors.montoRange)}
+                                name="montoRange"
                                 onChange={handleChange}
                                 startAdornment={<InputAdornment position="start">$</InputAdornment>}
                               />
-                            )}
-                            {!amountsRange && (
+                            ) : (
                               <FormControl variant="outlined" style={{ marginTop: 0 }} margin="dense">
                                 <Select
                                   native
@@ -215,15 +212,15 @@ const CartCard = ({ item, index, setUpdate }) => {
                                   className={classes.select}
                                   value={values.monto}
                                   onChange={handleChange}
-                                  // label=""
                                   inputProps={{
                                     name: "monto",
                                     id: "outlined-monto-native-simple",
                                   }}
                                 >
-                                  {amountsFixed?.map((el, ind) => (
-                                    <option value={el} key={ind}>
-                                      $ {el}
+                                  {amountsFixed.map((el, ind) => (
+                                    <option value={ind} key={ind}>
+                                      $ {el.amount / 100}{" "}
+                                      {el.description != "" && el.description ? " ( " + el.description + " ) " : ""}
                                     </option>
                                   ))}
                                 </Select>
@@ -294,46 +291,43 @@ const CartCard = ({ item, index, setUpdate }) => {
               <div className={classes.amountContainer}>
                 {!editable && (
                   <>
-                    <p className={classes.count}>Cant : 1 </p>
-                    <p className={classes.price}>${itm.amount}</p>
+                    {itm.discountType == "" ? (
+                      <div className={classes.amountContainer_sub}>
+                        <p className={classes.count}>Cant : 1 </p>
+                        <p className={classes.price__}>${itm.amount / 100}</p>
+                      </div>
+                    ) : (
+                      <div className={classes.amountContainer_sub}>
+                        <p className={classes.count}>Cant : 1 </p>
+                        <p className={classes.price}>${itm.amount / 100}</p>
+                      </div>
+                    )}
+                    {itm.discountType == "amount" && itm.discountType != "" && (
+                      <p className={classes.price_}>${itm.amount / 100 - itm.discountAmount}</p>
+                    )}
+                    {itm.discountType == "percent" && itm.discountType != "" && (
+                      <p className={classes.price_}>${itm.amount / 100 - (itm.amount / 10000) * itm.discountAmount}</p>
+                    )}
                   </>
                 )}
                 {editable && (
                   <>
-                    {/* <OutlinedInput
-            type="text"
-            className={classes.amountInput}
-            value={itm.amount}
-            name="amount"
-            onChange={handleChange}
-            startAdornment={
-              <InputAdornment position="start">
-                <Button className={classes.amountControlBtn} color="primary" onClick={handleClick()}>-</Button>
-              </InputAdornment>
-            }
-            endAdornment={
-              <InputAdornment position="end">
-                <Button className={classes.amountControlBtn} color="primary" onClick={handleClick(true)}>+</Button>
-              </InputAdornment>
-            }
-          /> */}
                     <p className={classes.count}>Cant : 1 </p>
                     <Field type="number" name="monto" id="monto" value={values.monto}>
                       {({ field }) => (
                         <div>
-                          {amountsRange && (
+                          {amountsFixed.length == 0 || amountsRange ? (
                             <OutlinedInput
                               type="number"
                               {...field}
                               className={classes.priceInput}
-                              value={values.monto}
-                              error={touched.monto && Boolean(errors.monto)}
-                              name="monto"
+                              value={values.montoRange}
+                              error={touched.montoRange && Boolean(errors.montoRange)}
+                              name="montoRange"
                               onChange={handleChange}
                               startAdornment={<InputAdornment position="start">$</InputAdornment>}
                             />
-                          )}
-                          {!amountsRange && (
+                          ) : (
                             <FormControl variant="outlined" style={{ marginTop: 0 }} margin="dense">
                               <Select
                                 native
@@ -341,21 +335,20 @@ const CartCard = ({ item, index, setUpdate }) => {
                                 className={classes.select}
                                 value={values.monto}
                                 onChange={handleChange}
-                                // label=""
                                 inputProps={{
                                   name: "monto",
                                   id: "outlined-monto-native-simple",
                                 }}
                               >
-                                {amountsFixed?.map((el, ind) => (
-                                  <option value={el} key={ind}>
-                                    $ {el}
+                                {amountsFixed.map((el, ind) => (
+                                  <option value={ind} key={ind}>
+                                    $ {el.amount / 100}{" "}
+                                    {el.description != "" && el.description ? " ( " + el.description + " ) " : ""}
                                   </option>
                                 ))}
                               </Select>
                             </FormControl>
                           )}
-                          {/* <ErrorMessage name="monto" /> */}
                         </div>
                       )}
                     </Field>

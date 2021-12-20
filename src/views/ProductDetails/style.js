@@ -3,6 +3,7 @@ import { container, title } from "../../assets/jss/material-kit-react";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    maxWidth: 1080,
     fontFamily: "Roboto",
     color: "#000",
     margin: "auto",
@@ -13,27 +14,99 @@ const useStyles = makeStyles((theme) => ({
       // margin: 0,
     },
   },
-  header: {
-    height: 200,
-    borderRadius: 30,
-    backgroundColor: "#fff",
-    marginTop: -90,
-    display: "flex",
-    justifyContent: "space-around",
+  pink_area: {
+    backgroundColor: "#C099F8",
+    fontWeight: "bold",
+    fontSize: 14,
+    padding: "3px 10px",
+    width: "fit-content",
+  },
+  sub_discount: {
+    backgroundColor: "white",
+    borderTopRightRadius: 100,
+    height: 32,
+    marginLeft: -1,
+    // [theme.breakpoints.up("1080")]: {
+    //   height: "3.2vw",
+    // },
+    [theme.breakpoints.down(1500)]: {
+      height: "2.1vw",
+    },
+    [theme.breakpoints.down(1350)]: {
+      height: "2.15vw",
+    },
+    [theme.breakpoints.down("md")]: {
+      height: "2.2vw",
+    },
     [theme.breakpoints.down("xs")]: {
-      marginTop: -35,
+      height: "2.5vw",
     },
   },
+  discount_div: {
+    padding: 10,
+  },
+
+  discount: {
+    textAlign: "center",
+    padding: 0,
+    minWidth: 120,
+    marginLeft: "calc(100% - 120px)",
+    backgroundImage: "linear-gradient( #6600EE 98%, white 2%)",
+    borderTopLeftRadius: 10,
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    transform: "translateY(-100%)",
+    marginBottom: -70,
+    "& br": {
+      display: "none",
+    },
+    "& h1": {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 0,
+      marginTop: 0,
+    },
+    "& h2": {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 0,
+      marginTop: 0,
+    },
+    "& h3": {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 0,
+      marginTop: 0,
+    },
+    "& h4": {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 0,
+      marginTop: 0,
+    },
+    "& h5": {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 0,
+      marginTop: 0,
+    },
+    "& h6": {
+      fontSize: 18,
+      fontWeight: "bold",
+      marginBottom: 0,
+      marginTop: 0,
+    },
+  },
+  header: {
+    marginTop: 20,
+    display: "flex",
+    justifyContent: "space-around",
+    flexWrap: "wrap",
+  },
   background: {
-    backgroundSize: "100% 100%",
-    backgroundRepeat: "no-repeat",
-    height: 400,
-    [theme.breakpoints.down("sm")]: {
-      height: 300,
-    },
-    [theme.breakpoints.down("xs")]: {
-      height: 200,
-    },
+    height: "auto",
+    width: 100,
   },
   pBody: {
     display: "flex",
@@ -59,6 +132,15 @@ const useStyles = makeStyles((theme) => ({
     "& span": {
       fontSize: 14,
     },
+  },
+  label_: {
+    marginRight: 5,
+    fontSize: 14,
+    fontWeight: "bolder",
+    color: "#AAAAAA",
+  },
+  label_top: {
+    marginTop: 10,
   },
   cardDesign: {
     marginLeft: 15,
@@ -95,9 +177,9 @@ const useStyles = makeStyles((theme) => ({
   },
   cardDesignImages: {
     display: "flex",
-    // height: 223,
-    height: 80,
+    height: 100,
     flexWrap: "wrap",
+    marginBottom: 20,
     [theme.breakpoints.down("xs")]: {
       marginLeft: 0,
     },
@@ -121,39 +203,76 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   description: {
-    marginTop: -70,
+    marginTop: 20,
     display: "flex",
     justifyContent: "space-around",
     flexWrap: "wrap",
     alignItems: "end",
-    [theme.breakpoints.down("xs")]: {},
+    [theme.breakpoints.down("350")]: {
+      marginTop: 0,
+    },
   },
   rightPara: {
     width: "40%",
     display: "flex",
-    alignItems: "center",
     justifyContent: "space-around",
     flexWrap: "wrap",
     [theme.breakpoints.down("xs")]: {
       width: "95%",
       justifyContent: "space-between",
+      marginLeft: 30,
+      marginRight: 30,
     },
     "& span": {
       fontSize: 12,
     },
+    "& h3": {
+      fontSize: 34,
+      fontWeight: "bold",
+      marginTop: -90,
+    },
+  },
+  rightPara_: {
+    width: "40%",
+    marginRight: "1%",
+    display: "flex",
+    justifyContent: "flex-end",
+    flexWrap: "wrap",
+    [theme.breakpoints.down("xs")]: {
+      width: "95%",
+      justifyContent: "flex-end",
+      marginLeft: 30,
+      marginRight: 30,
+    },
+    "& span": {
+      fontSize: 12,
+    },
+    "& h3": {
+      fontSize: 34,
+      fontWeight: "bold",
+      marginTop: -90,
+    },
   },
   leftPara: {
-    width: "30%",
+    width: "50%",
     [theme.breakpoints.down("xs")]: {
       width: "95%",
       marginTop: 5,
       marginBottom: 15,
+      marginLeft: 20,
+      marginRight: 20,
+    },
+    "& h3": {
+      fontSize: 34,
+      fontWeight: "bold",
+      marginTop: 0,
     },
   },
   terms: {
     fontSize: 13,
     cursor: "pointer",
     textDecoration: "underline",
+    color: "#3078D0",
   },
   leftSide: {
     width: "40%",
@@ -173,22 +292,24 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   leftTitle: {
-    width: "40%",
-    // textAlign: "center",
+    width: "50%",
     "& h3": {
+      fontSize: 34,
       fontWeight: "bold",
-      fontSize: 40,
+      marginTop: 0,
+      marginLeft: 20,
     },
-    [theme.breakpoints.down("xs")]: {
-      width: "45%",
+    [theme.breakpoints.down("530")]: {
       "& h3": {
-        fontSize: 30,
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 0,
       },
     },
-    [theme.breakpoints.down("sm")]: {
-      "& h3": {
-        fontSize: 35,
-      },
+    [theme.breakpoints.down("350")]: {
+      width: "100%",
+      marginLeft: 10,
+      flexWrap: "wrap",
     },
   },
   inputPara: {
@@ -196,32 +317,28 @@ const useStyles = makeStyles((theme) => ({
     color: "#666",
   },
   rightTitle: {
+    width: "50%",
     textAlign: "right",
-    // marginTop: -50,
     "& h3": {
       fontSize: 34,
       fontWeight: "bold",
-      marginBottom: 0,
+      marginTop: 0,
+      marginRight: 30,
     },
-    width: "30%",
-    [theme.breakpoints.down("xs")]: {
-      width: "45%",
+    [theme.breakpoints.down("530")]: {
       "& h3": {
-        fontSize: 24,
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 0,
       },
-      "& p": {
-        fontSize: 12,
-      },
-      // marginTop: -40,
     },
-    [theme.breakpoints.down("sm")]: {
-      "& h3": {
-        fontSize: 28,
-      },
-      "& p": {
-        fontSize: 13,
-      },
-      // marginTop: -40,
+    [theme.breakpoints.down("350")]: {
+      width: "100%",
+      textAlign: "left",
+      marginTop: 10,
+      marginBottom: 15,
+      marginLeft: 30,
+      flexWrap: "wrap",
     },
   },
   price: {
@@ -237,9 +354,12 @@ const useStyles = makeStyles((theme) => ({
         "0 14px 26px -12px rgb(153 153 153 / 42%), 0 4px 23px 0px rgb(0 0 0 / 12%), 0 8px 10px -5px rgb(153 153 153 / 20%)",
       backgroundColor: "#999999",
     },
-    [theme.breakpoints.down("sm")]: {
-      width: 70,
-    },
+  },
+  price_active: {
+    background: "#EDE1FD",
+    color: "black",
+    border: "solid",
+    borderWidth: 1,
   },
   rightSpan: {
     lineHeight: 5.2,

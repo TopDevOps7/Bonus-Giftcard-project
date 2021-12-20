@@ -126,21 +126,71 @@ form {
 }
 
 .bannerHome{
-    height: 320px;
-    width: 100%;
-    display: "flex",
-  }
-  .cardBanner{
+  width: 100%;
+  display: "flex",
+}
+.cardBanner{
+    max-width: 1080px;
     width: 70%;
   }
 
-@media only screen and (max-width: 578px) {
+@media only screen and (max-width: 800px) {
   .hiddenFilters{
     display: none;
   }
-  .bannerHome{
-    height: 200px;
-    width: 100%;
+  .cardBanner{
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 670px) {
+  .hiddenFilters{
+    display: none;
+  }
+  .cardBanner{
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .hiddenFilters{
+    display: none;
+  }
+  .cardBanner{
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  .hiddenFilters{
+    display: none;
+  }
+  .cardBanner{
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 320px) {
+  .hiddenFilters{
+    display: none;
+  }
+  .cardBanner{
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 230px) {
+  .hiddenFilters{
+    display: none;
+  }
+  .cardBanner{
+    width: 95%;
+  }
+}
+
+@media only screen and (max-width: 190px) {
+  .hiddenFilters{
+    display: none;
   }
   .cardBanner{
     width: 95%;

@@ -1,43 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 
-import { Modal, Slider } from "@material-ui/core";
-
-import { Check, Close, Favorite, Fastfood, LocalPharmacy, EmojiNature, MovieFilter, Computer } from "@material-ui/icons";
-
-import GridItem from "components/Grid/GridItem";
-import GridContainer from "components/Grid/GridContainer";
+import { Modal } from "@material-ui/core";
+import { Check, Close } from "@material-ui/icons";
 import Button from "components/CustomButtons/Button";
-
-import { filterByCategory, cleanFilters, filterByPrice } from "redux/actions/home";
+import { filterByCategory, cleanFilters } from "redux/actions/home";
 
 import useStyles from "./style";
-
-function valuetext(value) {
-  return `${value}$`;
-}
 
 const FilterModal = ({ open, onClose }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const filterOptions = useSelector(({ home }) => home.filterOptions);
-
-  const [value, setValue] = useState(filterOptions.price);
-
-  const handleChange = (event, newValue) => {
-    dispatch(filterByPrice(newValue));
-  };
+  const categories = useSelector(({ home }) => home.categories);
 
   const getStatus = (option) => {
     return filterOptions.categories.includes(option);
   };
-
-  useEffect(() => {
-    setValue(filterOptions.price);
-  }, [filterOptions.price]);
 
   return (
     <Modal
@@ -53,106 +35,33 @@ const FilterModal = ({ open, onClose }) => {
         </div>
         <div className={classes.modalBody}>
           <h4>
-            <b>Rango de precio</b>
-          </h4>
-          <GridContainer>
-            <GridItem xs={6} sm={6} md={6} style={{ paddingLeft: 0 }}>
-              <p>{`$${value[0]}`}</p>
-            </GridItem>
-            <GridItem xs={6} sm={6} md={6} style={{ paddingRight: 0 }}>
-              <p style={{ textAlign: "right" }}>{`$${value[1]}`}</p>
-            </GridItem>
-          </GridContainer>
-          <Slider
-            value={value}
-            onChangeCommitted={handleChange}
-            onChange={(ev, va) => setValue(va)}
-            valueLabelDisplay="off"
-            aria-labelledby="range-slider"
-            getAriaValueText={valuetext}
-            // scale={(x) => x * (filterOptions.available)}
-            step={10}
-            min={0}
-            max={filterOptions.maxAmount}
-          />
-          <br />
-          <hr />
-          <h4>
             <b>Categorías</b>
           </h4>
           <div>
-            <Button
-              className={classNames(classes.filterButton, getStatus("Food") && "active")}
-              simple
-              block
-              color="github"
-              onClick={() => dispatch(filterByCategory("Food"))}
-            >
-              <span className="button-label">
-                <Fastfood /> <span>Comida y bebidas</span>
-              </span>
-              {getStatus("Food") && <Check color="primary" />}
-            </Button>
-            <Button
-              simple
-              className={classNames(classes.filterButton, getStatus("Wellbeing") && "active")}
-              block
-              color="github"
-              onClick={() => dispatch(filterByCategory("Wellbeing"))}
-            >
-              <span className="button-label">
-                <LocalPharmacy /> <span>Belleza y bienestar</span>
-              </span>
-              {getStatus("Wellbeing") && <Check color="primary" />}
-            </Button>
-            <Button
-              simple
-              className={classNames(classes.filterButton, getStatus("Entertainment") && "active")}
-              block
-              color="github"
-              onClick={() => dispatch(filterByCategory("Entertainment"))}
-            >
-              <span className="button-label">
-                <MovieFilter /> <span>Entretenimiento</span>
-              </span>
-              {getStatus("Entertainment") && <Check color="primary" />}
-            </Button>
-            <Button
-              simple
-              className={classNames(classes.filterButton, getStatus("Fashion") && "active")}
-              block
-              color="github"
-              onClick={() => dispatch(filterByCategory("Fashion"))}
-            >
-              <span className="button-label">
-                <Favorite /> <span>Moda</span>
-              </span>
-              {getStatus("Fashion") && <Check color="primary" />}
-            </Button>
-            <Button
-              simple
-              className={classNames(classes.filterButton, getStatus("Travel") && "active")}
-              block
-              color="github"
-              onClick={() => dispatch(filterByCategory("Travel"))}
-            >
-              <span className="button-label">
-                <EmojiNature /> <span>Turismo y viajes</span>
-              </span>
-              {getStatus("Travel") && <Check color="primary" />}
-            </Button>
-            <Button
-              simple
-              className={classNames(classes.filterButton, getStatus("Digital") && "active")}
-              block
-              color="github"
-              onClick={() => dispatch(filterByCategory("Digital"))}
-            >
-              <span className="button-label">
-                <Computer /> <span>Tecnología</span>
-              </span>
-              {getStatus("Digital") && <Check color="primary" />}
-            </Button>
+            {categories !== [] ? (
+              categories.map((category) => (
+                <Button
+                  className={classNames(classes.filterButton, getStatus(category.name) && "active")}
+                  simple
+                  block
+                  color="github"
+                  onClick={() => dispatch(filterByCategory(category.name))}
+                  key={category.name}
+                >
+                  <span className="button-label">
+                    {category.icon ? (
+                      <img src={category.icon} className={classes.category_icon_m} />
+                    ) : (
+                      <div className={classes.category_icon_m}></div>
+                    )}{" "}
+                    <span>{category.name}</span>
+                  </span>
+                  {getStatus(category.name) && <Check color="primary" />}
+                </Button>
+              ))
+            ) : (
+              <div></div>
+            )}
 
             <Button color="primary" block style={{ marginTop: 30 }} onClick={onClose}>
               MOSTRAR RESULTADOS
@@ -161,6 +70,7 @@ const FilterModal = ({ open, onClose }) => {
               color="danger"
               block
               onClick={() => {
+                document.getElementById("outlined-adornment-filter").value = "";
                 dispatch(cleanFilters());
                 onClose();
               }}

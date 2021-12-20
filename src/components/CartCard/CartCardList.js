@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import { makeStyles, withStyles, Badge } from "@material-ui/core";
-import { cards } from "./../../constants/index";
+import { useSelector } from "react-redux";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -38,6 +38,8 @@ const useStyle = makeStyles(() => ({
   },
   cardPrice: {
     width: 65,
+    textAlign: "right",
+    marginRight: 5,
   },
 }));
 
@@ -52,7 +54,18 @@ const StyledBadge = withStyles((theme) => ({
 
 const CartCardList = ({ item }) => {
   const classes = useStyle();
-  console.log(item);
+  const [cardNum, setCardNum] = useState(0);
+
+  const cardsDesign = useSelector(({ home }) => home.cardsDesign);
+
+  useEffect(() => {
+    cardsDesign &&
+      cardsDesign.length != 0 &&
+      cardsDesign.map((card, ind) => {
+        card.name == item.style && setCardNum(ind);
+      });
+  }, [cardsDesign]);
+
   return (
     <div className={classes.root}>
       <div className={classes.cardImage}>
@@ -63,7 +76,7 @@ const CartCardList = ({ item }) => {
             horizontal: "left",
           }}
         >
-          <img src={cards[item.style]} />
+          <img src={cardsDesign && cardsDesign.length != 0 && cardsDesign[cardNum].path} />
         </StyledBadge>
       </div>
       <div className={classes.cardInfo}>
@@ -72,7 +85,7 @@ const CartCardList = ({ item }) => {
         {item.isGift && <p className={classes.descTitle}>Para: {item.toName}</p>}
       </div>
       <div className={classes.cardPrice}>
-        <h5>${item.amount}</h5>
+        <h5>${item.amount / 100}</h5>
       </div>
     </div>
   );

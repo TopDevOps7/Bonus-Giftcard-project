@@ -2,8 +2,10 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    maxWidth: 1080,
     width: "100%",
     display: "flex",
+    margin: "-35px auto",
     [theme.breakpoints.down("sm")]: {
       overflowX: "hidden",
       margin: 0,
@@ -11,16 +13,14 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   leftSide: {
-    width: "55%",
-    minHeight: "calc(100vh - 200px)",
+    width: "60%",
+    minHeight: "calc(100vh - 170px)",
     paddingTop: 45,
     [theme.breakpoints.down("sm")]: {
       minHeight: "auto",
       width: "100%",
-      padding: 30,
-    },
-    [theme.breakpoints.down("xs")]: {
-      padding: 10,
+      paddingLeft: "5%",
+      paddingRight: "5%",
     },
   },
   leftTitle: {
@@ -29,10 +29,7 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     margin: "0 10px 25px auto",
     lineHeight: 2.2,
-    width: "35vw",
-    [theme.breakpoints.down("md")]: {
-      width: "45vw",
-    },
+    width: "85%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       marginBottom: 0,
@@ -42,9 +39,6 @@ const useStyles = makeStyles((theme) => ({
   },
   finalBtn: {
     width: "100%",
-    // [theme.breakpoints.down("md")]: {
-    //   width: "100vw",
-    // },
   },
   finalPara: {
     textAlign: "center",
@@ -63,9 +57,8 @@ const useStyles = makeStyles((theme) => ({
     zIndex: 5,
   },
   rightSide: {
-    minHeight: "calc(100vh - 200px)",
-    width: "45%",
-    paddingLeft: 30,
+    minHeight: "calc(100vh - 170px)",
+    width: "40%",
     paddingTop: 35,
     background: " #F8F8F8 0% 0% no-repeat padding-box",
     [theme.breakpoints.down("sm")]: {
@@ -78,18 +71,19 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   rightBody: {
-    width: "55%",
-    [theme.breakpoints.down("md")]: {
-      width: "70%",
-    },
+    width: "90%",
+    paddingLeft: "10%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
+      paddingLeft: "1%",
+      paddingRight: "1%",
     },
   },
   rightTitle: {
     lineHeight: 2.2,
     fontSize: 20,
-    fontWeight: 450,
+    fontWeight: 500,
+    paddingTop: 30,
     [theme.breakpoints.down("sm")]: {
       lineHeight: 2,
       fontSize: 18,
@@ -126,19 +120,20 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 20,
     marginRight: 10,
     marginLeft: "auto",
-    width: "35vw",
-
-    // display: "flex",
-    // alignItems: "flex-end",
-    // justifyItems: "space-between",
-    // flexDirection: "column",
-    [theme.breakpoints.down("md")]: {
-      width: "45vw",
-    },
+    width: "85%",
     [theme.breakpoints.down("sm")]: {
       width: "100%",
       padding: 0,
     },
+  },
+  margin_bottom_400: {
+    marginBottom: 400,
+  },
+  margin_top_50: {
+    marginTop: 50,
+  },
+  margin_top_80: {
+    marginTop: 80,
   },
 }));
 export default useStyles;

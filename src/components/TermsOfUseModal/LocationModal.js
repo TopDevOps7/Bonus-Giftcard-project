@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { Modal } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 
-import useStyles from "./style";
+import useStyles from "./style_";
 
 const CardPreviewModal = ({ open, onClose, content }) => {
   const classes = useStyles();
@@ -17,7 +17,7 @@ const CardPreviewModal = ({ open, onClose, content }) => {
           <Close className={classes.closeIcon} onClick={onClose} />
         </div>
         <div className={classes.cardHeader}>
-          <h4>Condiciones de uso</h4>
+          <h4>Ubicaciones</h4>
         </div>
         <div className={classes.dottedLine} />
         <div dangerouslySetInnerHTML={{ __html: content }} />

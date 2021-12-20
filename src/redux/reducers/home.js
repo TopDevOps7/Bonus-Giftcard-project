@@ -3,11 +3,15 @@ import _ from "lodash";
 
 import {
   GET_CARDS_REQUEST,
+  GET_BANNERS_REQUEST,
   GET_CARDS,
   GET_CARDS_ERROR,
   GET_CARD_DETAIL_REQUEST,
   GET_CARD_DETAIL,
   GET_CARD_DETAIL_ERROR,
+  GET_PARTNER,
+  GET_EMAIL_RESULT_REQUEST,
+  GET_CARDSDESIGN,
   FILTER_CARDS_BY_CATEGORY,
   FILTER_CARDS_BY_NAME,
   CLEAN_FILTERS,
@@ -21,6 +25,7 @@ import {
 const initialField = {
   partnerId: undefined,
   orders: [],
+  logo: undefined,
 };
 
 const initialState = {
@@ -39,11 +44,55 @@ const initialState = {
     limit: 20,
     page: 1,
   },
+  categories: [],
+  banners: [],
+  partner: {},
+  emailResult: {},
+  cardsDesign: [],
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case GET_CARDS_REQUEST:
+    case GET_CARDS_REQUEST: {
+      let categories = state.categories;
+      categories = action.categories;
+      return {
+        ...state,
+        categories,
+      };
+    }
+    case GET_BANNERS_REQUEST: {
+      let banners = state.banners;
+      banners = action.banners;
+      return {
+        ...state,
+        banners,
+      };
+    }
+    case GET_PARTNER: {
+      let partner = state.partner;
+      partner = action.partner;
+      return {
+        ...state,
+        partner,
+      };
+    }
+    case GET_EMAIL_RESULT_REQUEST: {
+      let emailResult = state.emailResult;
+      emailResult = action.payload;
+      return {
+        ...state,
+        emailResult,
+      };
+    }
+    case GET_CARDSDESIGN: {
+      let cardsDesign = state.cardsDesign;
+      cardsDesign = action.cardsDesign;
+      return {
+        ...state,
+        cardsDesign,
+      };
+    }
     case GET_CARD_DETAIL_REQUEST: {
       return {
         ...state,
@@ -67,8 +116,8 @@ export default function (state = initialState, action) {
         cards: action.payload,
         filterOptions: {
           ...state.filterOptions,
-          maxAmount: Number(maxAmount),
-          price: [0, maxAmount],
+          maxAmount: Number(maxAmount.amount),
+          price: [0, maxAmount.amount],
         },
         data: {
           ...state.data,
@@ -76,6 +125,7 @@ export default function (state = initialState, action) {
             ...initialField,
             ...state.data[partnerId],
             partnerId,
+            logo: action.logo,
           },
         },
       };
@@ -92,6 +142,7 @@ export default function (state = initialState, action) {
           [partnerId]: {
             ...state.data[partnerId],
             partnerId,
+            logo: action.logo,
           },
         },
       };
@@ -161,16 +212,29 @@ export default function (state = initialState, action) {
       let orders = state.data[partnerId].orders;
       orders = orders ?? [];
       orders.splice(0, 0, action.payload);
+
+      let partner_ids_str = localStorage.getItem("partner_ids");
+      if (partner_ids_str == null) partner_ids_str = partnerId;
+      else partner_ids_str += ",/" + partnerId;
+      localStorage.setItem("partner_ids", partner_ids_str);
+      localStorage.setItem(
+        partnerId,
+        JSON.stringify({
+          ...state.data[partnerId],
+          partnerId,
+          orders,
+        })
+      );
+
+      let partner_data = {};
+      let partner_ids = partner_ids_str.split(",/");
+      partner_ids.map((item) => {
+        partner_data[item] = JSON.parse(localStorage.getItem(item));
+      });
+
       return {
         ...state,
-        data: {
-          ...state.data,
-          [partnerId]: {
-            ...state.data[partnerId],
-            partnerId,
-            orders,
-          },
-        },
+        data: partner_data,
       };
     }
     case EDIT_ORDER: {
@@ -178,17 +242,26 @@ export default function (state = initialState, action) {
       let partnerId = action.partnerId ?? "noPartner";
       let updatedOrders = state.data[partnerId].orders;
       updatedOrders = updatedOrders ?? [];
-
       updatedOrders.splice(action.payload.index, 1, action.payload.order);
+
+      let partner_ids = localStorage.getItem("partner_ids").split(",/");
+      localStorage.setItem(
+        partnerId,
+        JSON.stringify({
+          ...state.data[partnerId],
+          partnerId,
+          orders: updatedOrders,
+        })
+      );
+
+      let partner_data = {};
+      partner_ids.map((item) => {
+        partner_data[item] = JSON.parse(localStorage.getItem(item));
+      });
+
       return {
         ...state,
-        data: {
-          ...state.data,
-          [partnerId]: {
-            ...state.data[partnerId],
-            orders: updatedOrders,
-          },
-        },
+        data: partner_data,
       };
     }
     case DELETE_ORDER: {
@@ -197,15 +270,25 @@ export default function (state = initialState, action) {
       let deletedOrder = [...state.data[partnerId].orders];
       deletedOrder = deletedOrder ?? [];
       deletedOrder.splice(action.payload.index, 1);
+
+      let partner_ids = localStorage.getItem("partner_ids").split(",/");
+      localStorage.setItem(
+        partnerId,
+        JSON.stringify({
+          ...state.data[partnerId],
+          partnerId,
+          orders: deletedOrder,
+        })
+      );
+
+      let partner_data = {};
+      partner_ids.map((item) => {
+        partner_data[item] = JSON.parse(localStorage.getItem(item));
+      });
+
       return {
         ...state,
-        data: {
-          ...state.data,
-          [partnerId]: {
-            ...state.data[partnerId],
-            orders: deletedOrder,
-          },
-        },
+        data: partner_data,
       };
     }
     case CHANGE_PAGE:

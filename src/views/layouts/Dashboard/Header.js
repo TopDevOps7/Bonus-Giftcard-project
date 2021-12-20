@@ -6,7 +6,7 @@ import { Badge, withStyles, makeStyles } from "@material-ui/core";
 import GridItem from "components/Grid/GridItem";
 import GridContainer from "components/Grid/GridContainer";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+// import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 import HeaderComponent from "components/Header/Header";
 import Button from "components/CustomButtons/Button";
@@ -42,8 +42,7 @@ const useStyle = makeStyles((theme) => ({
 const Header = () => {
   const classes = useStyle();
   const dispatch = useDispatch();
-  // const theme = useTheme();
-  const { partnerId } = useParams();
+  const { partnerId, userId, uuid } = useParams();
 
   let orders = useSelector((state) => state.home.data[partnerId ?? "noPartner"]?.orders);
   orders = orders ?? [];
@@ -72,34 +71,25 @@ const Header = () => {
         onEnter={handleEnter}
         rightLinks={
           <GridContainer>
-            <GridItem xs={2} sm={2} md={5} style={{ display: "flex", padding: 0 }}>
-              <Button className={classes.button} justIcon color="transparent">
-                <AccountCircleIcon style={{ color: "#000" }} />
-              </Button>
-              <StyledBadge badgeContent={orders.length} color="secondary">
-                <Link to={cartUrl}>
-                  <Button className={classes.button} justIcon color="transparent" style={{ marginRight: 10 }}>
-                    <ShoppingCartIcon style={{ color: "#000" }} />
-                  </Button>
-                </Link>
-              </StyledBadge>
-            </GridItem>
+            {location.pathname != `/${partnerId}/email/${userId}/${uuid}` && (
+              <GridItem xs={2} sm={2} md={5} style={{ display: "flex", padding: 0 }}>
+                <StyledBadge badgeContent={orders.length} color="secondary">
+                  <Link to={cartUrl}>
+                    <Button
+                      className={classes.button}
+                      justIcon
+                      color="transparent"
+                      style={{ marginRight: 10 }}
+                      onClick={() => sessionStorage.setItem("session", "cart")}
+                    >
+                      <ShoppingCartIcon style={{ color: "#000" }} />
+                    </Button>
+                  </Link>
+                </StyledBadge>
+              </GridItem>
+            )}
           </GridContainer>
         }
-        // rightList={[
-        //   {
-        //     label: "User Session",
-        //     link: "#",
-        //     badgeCount: 0,
-        //     icon: <AccountCircleIcon fontSize="small" style={{ color: "#000" }} />,
-        //   },
-        //   {
-        //     label: "View cart",
-        //     link: "/cart",
-        //     badgeCount: orders.length,
-        //     icon: <ShoppingCartIcon fontSize="small" style={{ color: "#000" }} />,
-        //   },
-        // ]}
         fixed
         color="white"
         changeColorOnScroll={{

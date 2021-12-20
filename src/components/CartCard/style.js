@@ -6,7 +6,7 @@ const useStyles = makeStyles((theme) => ({
 
     "& ul": {
       margin: 0,
-    }
+    },
   },
   root: {
     // width: "35vw",
@@ -27,8 +27,8 @@ const useStyles = makeStyles((theme) => ({
       alignItems: "center",
       marginTop: 5,
       fontSize: 14,
-      fontWeight: 450
-    }
+      fontWeight: 450,
+    },
   },
   image: {
     width: 106,
@@ -50,12 +50,12 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 0,
     fontWeight: "bold",
     "&:first-child": {
-      fontSize: 15
+      fontSize: 15,
     },
     "&:last-child": {
       marginBottom: 20,
-      fontWeight: 450
-    }
+      fontWeight: 450,
+    },
   },
   descTitle: {
     marginBottom: 5,
@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
   select: {
     "& select": {
       height: 20,
-      width: 60,
+      width: 80,
       textAlign: "center",
       padding: "5px 20px 5px 10px !important",
       fontSize: 14,
@@ -79,25 +79,44 @@ const useStyles = makeStyles((theme) => ({
 
     "& option": {
       textAlign: "left",
-    }
+    },
   },
   amountContainer: {
-    width: 160,
-    display: "flex",
+    width: "35%",
     alignItems: "baseline",
     justifyContent: "space-around",
-    textAlign: "center",
+    textAlign: "right",
     [theme.breakpoints.down("sm")]: {
-      width: "auto",
       display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      flexWrap: "wrap"
+      width: "auto",
+      flexWrap: "wrap",
+      textAlign: "left",
     },
-    [theme.breakpoints.down("xs")]: {
-      flexDirection: "column",
-      justifyContent: "space-around",
-      height: 65,
+    [theme.breakpoints.down(500)]: {
+      display: "grid",
+      width: "max-content",
+      flexWrap: "wrap",
+      textAlign: "left",
+    },
+  },
+  amountContainer_sub: {
+    display: "flex",
+    justifyContent: "space-between",
+    "& p": {
+      marginBottom: 0,
+    },
+    "& p:last-child": {
+      marginLeft: 50,
+    },
+    [theme.breakpoints.down("sm")]: {
+      display: "flex",
+    },
+    [theme.breakpoints.down(500)]: {
+      display: "grid",
+      textAlign: "left",
+      "& p:last-child": {
+        marginLeft: 10,
+      },
     },
   },
   count: {
@@ -106,7 +125,20 @@ const useStyles = makeStyles((theme) => ({
       margin: 10,
     },
   },
+  price__: {
+    fontWeight: "bold",
+    [theme.breakpoints.down("sm")]: {
+      margin: 10,
+    },
+  },
   price: {
+    [theme.breakpoints.down("sm")]: {
+      margin: 10,
+    },
+    fontSize: 12,
+    textDecoration: "line-through",
+  },
+  price_: {
     fontWeight: "bold",
     [theme.breakpoints.down("sm")]: {
       margin: 10,
@@ -121,7 +153,7 @@ const useStyles = makeStyles((theme) => ({
   },
   editIcon: {
     cursor: "pointer",
-    margin: 10
+    margin: 10,
   },
   btn: {
     backgroundColor: "#fff",
@@ -133,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
       color: "#0078D7",
       // fontWeight: "bold",
-    }
+    },
   },
   amountInput: {
     width: 100,
@@ -145,18 +177,18 @@ const useStyles = makeStyles((theme) => ({
       fontSize: 13,
       paddingTop: 8,
       paddingBottom: 8,
-      textAlign: "center"
+      textAlign: "center",
     },
     [theme.breakpoints.down("sm")]: {
       marginBottom: 0,
-    }
+    },
   },
   amountControlBtn: {
     height: 30,
     width: 15,
     padding: 15,
     margin: 0,
-    zIndex: 5
+    zIndex: 5,
   },
   priceInput: {
     width: 90,
@@ -166,18 +198,17 @@ const useStyles = makeStyles((theme) => ({
       padding: "7px 7px 7px 0",
     },
     "& p": {
-      fontSize: 14
-    }
+      fontSize: 14,
+    },
   },
   descTitleEdit: {
     width: "100%",
     height: 40,
     "& input": {
       fontSize: 14,
-      padding: "10px 14px"
-    }
+      padding: "10px 14px",
+    },
   },
-  descEdit: {
-  }
+  descEdit: {},
 }));
 export default useStyles;

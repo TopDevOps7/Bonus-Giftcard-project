@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import classNames from "classnames";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -10,10 +10,7 @@ import {
 import { Home } from "@material-ui/icons";
 import Button from "components/CustomButtons/Button";
 import CartCard from "components/CartCard/cartCard";
-
-// import { getCards } from "redux/actions/home";
 import { confirmOrder } from "redux/actions/cart";
-
 import useStyles from "./style";
 
 const Cart = () => {
@@ -23,14 +20,22 @@ const Cart = () => {
   const { partnerId } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [updateFlag, setUpdateFlag] = useState(0);
+  const [disableBtn, disableButton] = useState(false);
+  let errorMessage = useSelector((state) => state.cart.errors);
   let orders = useSelector((state) => state.home.data[partnerId ?? "noPartner"]?.orders);
   orders = orders ?? [];
-  const [updateFlag, setUpdateFlag] = useState(0);
 
   const getTotal = () => {
     let total = 0;
     orders.forEach((order) => {
-      total += Number(order.amount);
+      if (order.discountType == "") {
+        total += Number(order.amount);
+      } else {
+        order.discountType == "amount"
+          ? (total += Number(order.amount) - Number(order.discountAmount) * 100)
+          : (total += Number(order.amount) - (Number(order.amount) / 100) * Number(order.discountAmount));
+      }
     });
     return total;
   };
@@ -41,12 +46,20 @@ const Cart = () => {
   }
 
   const handleConfirm = () => {
+    disableButton(true);
     dispatch(confirmOrder(getTotal(), navigate, homeUrl, partnerId));
   };
 
-  // useEffect(() => {
-  //   dispatch(getCards());
-  // }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    if (errorMessage) {
+      disableButton(false);
+    }
+  }, [errorMessage]);
+
   return (
     <div className={classes.root}>
       {orders.length > 0 && (
@@ -65,48 +78,16 @@ const Cart = () => {
           </div>
           <div className={classes.rightSide}>
             <div className={classes.rightBody}>
-              {/* {!isMobile && ( */}
               <>
                 <h3 className={classes.rightTitle}>Resumen de tu compra</h3>
-                {/* <div className={classes.rightSubTitle}>
-                    <span>Subtotal</span> <span>$50</span>
-                  </div> */}
                 <hr />
               </>
-              {/* )} */}
-              {/* <h6 style={{ marginTop: 20 }}>¿Tienes código de descuento?</h6> */}
-              {/* <CustomInput
-            labelText="Introduce el código"
-            labelWidth={70}
-            className={classes.inputForm}
-          /> */}
-              {/* <Button color="primary"> APLICAR</Button> */}
-              {/* <TextField
-                className={classes.wiithButton}
-                variant="outlined"
-                margin="dense"
-                label="Introduce el código"
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <Button className={classes.applyButton} color="primary">
-                        APLICAR
-                      </Button>
-                    </InputAdornment>
-                  ),
-                }}
-              /> */}
-              {/* {!isMobile && ( */}
               <>
-                {/* <br /> */}
-                {/* <br /> */}
-                {/* <hr /> */}
                 <h6 className={classNames(classes.rightSubTitle)}>
-                  <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} />${getTotal()}
+                  <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} />${getTotal() / 100}
                 </h6>
               </>
-              {/* )} */}
-              <Button color="primary" onClick={handleConfirm} block>
+              <Button id="finish_button" color="primary" onClick={handleConfirm} block disabled={disableBtn}>
                 FINALIZAR COMPRA
               </Button>
               {!isMobile && (
@@ -125,10 +106,10 @@ const Cart = () => {
       )}
       {!orders.length && (
         <div style={{ flex: 1, textAlign: "center" }}>
-          <h3>Tu carrito de compras está vacío.</h3>
-          <div>
+          <h3 className={classes.margin_top_80}>Tu carrito de compras está vacío.</h3>
+          <div className={classes.margin_top_50}>
             <Link to={homeUrl}>
-              <Button color="primary">
+              <Button color="primary" className={classes.margin_bottom_400}>
                 <Home /> Seguir comprando
               </Button>
             </Link>

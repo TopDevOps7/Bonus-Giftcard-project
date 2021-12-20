@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 
 import Header from "./Header";
+import Footer from "components/Footer/Footer";
 
 import styles from "assets/jss/material-kit-react/views/componentsSections/basicsStyle";
 
@@ -33,6 +34,7 @@ const DashboardLayout = () => {
         <Outlet />
       </div>
       <ToastContainer />
+      <Footer className={classes.container} />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { ADD_ORDER, DELETE_ORDER, EDIT_ORDER, CONFIRM_ORDER } from "../actionTypes";
-import { GET_IP_URL, BACKEND_URL } from "../../constants";
+import { ADD_ORDER, DELETE_ORDER, EDIT_ORDER, CONFIRM_ORDER, CONFIRM_ORDERID, CONFIRM_ORDER_ERROR } from "../actionTypes";
+import { BACKEND_URL } from "../../constants";
 import { tokenConfig } from "./auth";
 import { loading, isError } from "utils/toast";
 import { isSuccess } from "utils/toast";
@@ -30,42 +30,70 @@ export const deleteOrder = (value, partnerId) => (dispatch) => {
 };
 
 export const confirmOrder = (amountCart, navigate, homeUrl, partnerId) => async (dispatch, getState) => {
-  loading("Please wait a moment...");
+  loading("Espere un momento...");
   try {
     // Get ip address
-    const { data } = await axios.get(GET_IP_URL);
-    const ipAddress = data.IPv4;
-    // Order Request.
+    // const { data } = await axios.get(GET_IP_URL);
+    // const ipAddress = data.ip;
+
+    let cart_array = [];
+    let cart_array_ = getState().home.data[partnerId ?? "noPartner"].orders;
+    cart_array_.map((cart) => {
+      let cart_item = {
+        giftcardId: cart.giftcard.id,
+        amount: cart.amount,
+        description: cart.description,
+        style: cart.style,
+        isScheduled: cart.isScheduled,
+        scheduledDate: cart.scheduledDate,
+        isGift: cart.isGift,
+        toName: cart.toName,
+        toEmail: cart.toEmail,
+        toMessage: cart.toMessage,
+        toPhone: cart.toPhone,
+      };
+      cart_array.push(cart_item);
+    });
+
     const payload = {
-      id: "",
-      description: null,
-      signature: null,
-      ipAddress,
+      partnerId: partnerId,
+      ipAddress: "0.0.0.0",
       userAgent: navigator.userAgent,
       userId: null,
       currency: "MXN",
-      status: 0,
-      txValue: 0,
-      amountCart,
-      amountDiscount: 0.0,
-      cart: {
-        items: getState().home.data[partnerId ?? "noPartner"].orders,
-      },
-      createdAt: Date.now(),
-      transactions: null,
+      amountCart: amountCart,
+      cart: cart_array,
       discounts: null,
     };
 
     const res = await axios.post(`${BACKEND_URL}Orders`, payload, tokenConfig());
-    // console.log(payload, "---");
-    isSuccess(res.data.message);
+    isSuccess(res.data.message == "Order added" ? "Orden creada" : "Order added");
     navigate(`${homeUrl}/cart/confirm`.replace("//", "/"));
     dispatch({
       type: CONFIRM_ORDER,
       payload: getState().home.orders,
     });
+    dispatch({
+      type: CONFIRM_ORDERID,
+      payload: res.data.object.id,
+    });
   } catch (error) {
-    console.log(error);
     isError(error.response.data.message);
+    dispatch({
+      type: CONFIRM_ORDER_ERROR,
+      payload: error,
+    });
+  }
+};
+
+export const successOrder = (value) => async () => {
+  loading("Espere un momento...");
+  try {
+    const res = await axios.post(`${BACKEND_URL}Payment`, value, tokenConfig());
+    isSuccess("Compra completada");
+    localStorage.setItem("successOrders", JSON.stringify(res.data));
+  } catch (error) {
+    isError(error.response.data.message);
+    localStorage.setItem("successOrders", JSON.stringify([]));
   }
 };

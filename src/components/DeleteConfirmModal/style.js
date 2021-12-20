@@ -2,28 +2,23 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    position: 'absolute',
-    width: 300,
-    textAlign: 'center',
+    position: "absolute",
+    width: 700,
+    textAlign: "center",
     top: 132,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     // border: '2px solid #000',
     borderRadius: 10,
     left: "50%",
     transform: "translate(-50%, 0)",
     // boxShadow: theme.shadows[5],
     padding: "40px 20px 20px",
-    [theme.breakpoints.down("md")]: {
-      width: "50%",
-    },
     [theme.breakpoints.down("sm")]: {
       width: "80%",
     },
     [theme.breakpoints.down("xs")]: {
-      top: 50,
       width: "95%",
-      padding: 20,
-    }
+    },
   },
   close: {
     width: "100%",
@@ -43,13 +38,13 @@ const useStyles = makeStyles((theme) => ({
   cardHeader: {
     "& h4": {
       fontWeight: "bold",
-    }
+    },
   },
   cardBody: {
     [theme.breakpoints.down("xs")]: {
       fontSize: 14,
       overflowY: "auto",
-    }
+    },
   },
   // dottedLine: {
   //   margin: "10px 0 20px",

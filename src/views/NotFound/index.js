@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Box, Container, makeStyles } from "@material-ui/core";
 import { Home } from "@material-ui/icons";
 import Button from "components/CustomButtons/Button";
@@ -23,6 +23,12 @@ const useStyles = makeStyles((theme) => ({
 
 const NotFoundView = () => {
   const classes = useStyles();
+  const { partnerId } = useParams();
+
+  let homeUrl = "/";
+  if (partnerId) {
+    homeUrl += partnerId;
+  }
 
   return (
     <div className={classes.root} title="404">
@@ -38,7 +44,7 @@ const NotFoundView = () => {
             <img alt="Under development" className={classes.image} src={img404} />
           </Box>
           <Box textAlign="center" marginTop={2}>
-            <Link to="/">
+            <Link to={homeUrl}>
               <Button color="primary">
                 <Home /> Seguir comprando
               </Button>

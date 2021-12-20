@@ -66,6 +66,9 @@ const useStyles = makeStyles((theme) => ({
       paddingLeft: 8,
     },
   },
+  category_icon_m: {
+    width: 30,
+  },
 }));
 
 export default useStyles;

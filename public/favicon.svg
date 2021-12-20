@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <g id="Favicon" transform="translate(1233 -7260)">
+    <rect id="Rectángulo_77" data-name="Rectángulo 77" width="512" height="512" transform="translate(-1233 7260)" fill="none"/>
+    <g id="gift-card" transform="translate(-1213.79 7273.091)">
+      <g id="Grupo_161" data-name="Grupo 161" transform="translate(0 90.29)">
+        <path id="Trazado_98" data-name="Trazado 98" d="M118.04,179.589a27.756,27.756,0,0,0-9.43,53.859L164.3,253.6l-20.147-55.7a27.852,27.852,0,0,0-26.111-18.305Z" transform="translate(-6.119 -96.342)"/>
+        <path id="Trazado_99" data-name="Trazado 99" d="M293.273,207.338a27.756,27.756,0,0,0-53.859-9.43L219.267,253.6l55.7-20.147a27.852,27.852,0,0,0,18.305-26.111Z" transform="translate(-14.86 -96.342)"/>
+        <path id="Trazado_100" data-name="Trazado 100" d="M209.355,191.513l3.293-9.1a55.507,55.507,0,1,1,71.093,71.079l-9.1,3.293H487.768V90.29H209.355Z" transform="translate(-14.188 -90.29)"/>
+        <path id="Trazado_101" data-name="Trazado 101" d="M93.047,253.491A55.507,55.507,0,1,1,164.126,182.4l3.293,9.1V90.29H0V256.783H102.148Z" transform="translate(0 -90.29)"/>
+        <path id="Trazado_102" data-name="Trazado 102" d="M286.422,328.732,271.031,351.82l-61.676-41.113v98.941H487.768v-111H241.307Z" transform="translate(-14.188 -104.411)"/>
+        <path id="Trazado_103" data-name="Trazado 103" d="M167.418,310.707,105.742,351.82,90.35,328.732l45.115-30.079H0v111H167.418Z" transform="translate(0 -104.411)"/>
+      </g>
+    </g>
+  </g>
+</svg>
