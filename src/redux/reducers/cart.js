@@ -29,7 +29,6 @@ export default function (state = initialState, action) {
     case CONFIRM_ORDERID: {
       let confirmOrderId = state.confirmOrderId;
       confirmOrderId = action.payload;
-      sessionStorage.setItem("session", "confirm");
       return {
         ...state,
         confirmOrderId,

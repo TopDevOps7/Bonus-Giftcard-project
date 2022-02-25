@@ -142,6 +142,13 @@ const useStyles = makeStyles((theme) => ({
   label_top: {
     marginTop: 10,
   },
+  logo: {
+    width: "30px !important",
+    height: "30px !important",
+    position: "absolute",
+    right: 30,
+    top: 15,
+  },
   cardDesign: {
     marginLeft: 15,
     position: "relative",
@@ -367,12 +374,22 @@ const useStyles = makeStyles((theme) => ({
   span: {
     marginRight: 50,
   },
-  // submitButton: {
-  //   background: "#FFFFFF 0% 0% no-repeat padding-box",
-  //   color: "#00000061",
-  //   // boxShadow: " 4px 2px 2px #00000024,-4px 2px 2px #00000024",
-  //   opacity: 1,
-  // },
+  twoInput: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+  },
+  couponInput: {
+    width: "70%",
+  },
+  margin_top_20: {
+    marginTop: 20,
+  },
+  couponButton: {
+    width: "30%",
+    marginTop: -8,
+    marginLeft: -1,
+  },
   sections: {
     padding: "50px 0",
     [theme.breakpoints.down("sm")]: {
@@ -403,6 +420,15 @@ const useStyles = makeStyles((theme) => ({
     width: 17,
     height: 17,
     color: "#FFFFFF",
+  },
+  errorCouponText: {
+    marginTop: -10,
+    marginLeft: 15,
+    color: "red",
+    fontSize: 13,
+  },
+  loading: {
+    marginLeft: 5,
   },
 }));
 export default useStyles;

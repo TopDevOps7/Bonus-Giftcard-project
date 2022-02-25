@@ -12,6 +12,7 @@ export const GET_CARD_DETAIL_ERROR = "GET_CARD_DETAIL_ERROR";
 export const GET_PARTNER = "GET_PARTNER";
 export const GET_EMAIL_RESULT_REQUEST = "GET_EMAIL_RESULT_REQUEST";
 export const GET_CARDSDESIGN = "GET_CARDSDESIGN";
+export const SET_COUPON = "SET_COUPON";
 /**
  * ^Pagination action types
  */
@@ -29,6 +30,7 @@ export const CLEAN_FILTERS = "CLEAN_FILTERS";
 export const ADD_ORDER = "ADD_ORDER";
 export const DELETE_ORDER = "DELETE_ORDER";
 export const EDIT_ORDER = "EDIT_ORDER";
+export const CHANGE_ORDERS = "CHANGE_ORDERS";
 export const CONFIRM_ORDER = "CONFIRM_ORDER";
 export const CONFIRM_ORDERID = "CONFIRM_ORDERID";
 export const CONFIRM_ORDER_ERROR = "CONFIRM_ORDER_ERROR";

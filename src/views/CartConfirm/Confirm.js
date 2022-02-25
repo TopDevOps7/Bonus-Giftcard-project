@@ -19,6 +19,10 @@ import Amex from "../../assets/img/icons8-amex.svg";
 import { prefixes } from "./prefixes.js";
 import { Home } from "@material-ui/icons";
 import { JSEncrypt } from "jsencrypt";
+import { createTheme, MuiThemeProvider } from "@material-ui/core/styles";
+
+import { filterStringName } from "../../constants";
+import { filterStringEmail } from "../../constants";
 
 const ExpiryDateFormat = React.forwardRef(function ExpiryDateFormat(props, ref) {
   const { onChange, ...other } = props;
@@ -81,6 +85,32 @@ const Confirm = () => {
   const [type, setType] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  let partner = useSelector(({ home }) => home.partner.configuration);
+  let documentTitle = useSelector(({ home }) => home.partner.name);
+  let couponResult = useSelector(({ home }) => home.coupon);
+
+  documentTitle && (document.title = documentTitle);
+
+  JSON.parse(sessionStorage.getItem("partner")) && (partner = JSON.parse(sessionStorage.getItem("partner")).configuration);
+
+  const theme = createTheme({
+    overrides: {
+      MuiOutlinedInput: {
+        root: {
+          "&$focused $notchedOutline": {
+            borderColor: partner && partner.colors && partner.colors.button ? `${partner.colors.button}` : "#3F51B5",
+          },
+        },
+      },
+      MuiFormLabel: {
+        root: {
+          "&$focused": {
+            color: partner && partner.colors && partner.colors.button ? `${partner.colors.button}` : "#3F51B5",
+          },
+        },
+      },
+    },
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -298,37 +328,40 @@ const Confirm = () => {
     return Yup.object(validation);
   };
 
-  const getTotal = () => {
-    let total = 0;
-    if (success == true) {
-      window.scrollTo(0, 0);
-      ordersTemp.forEach((order) => {
-        if (order.discountType == "") {
-          total += Number(order.amount);
-        } else {
-          order.discountType == "amount"
-            ? (total += Number(order.amount) - Number(order.discountAmount) * 100)
-            : (total += Number(order.amount) - (Number(order.amount) / 100) * Number(order.discountAmount));
-        }
-      });
-    } else {
-      orders.forEach((order) => {
-        if (order.discountType == "") {
-          total += Number(order.amount);
-        } else {
-          order.discountType == "amount"
-            ? (total += Number(order.amount) - Number(order.discountAmount) * 100)
-            : (total += Number(order.amount) - (Number(order.amount) / 100) * Number(order.discountAmount));
-        }
-      });
-    }
-    return total / 100;
-  };
-
   let homeUrl = "/";
   if (partnerId) {
     homeUrl += partnerId;
   }
+
+  const handleChangeName = (e) => {
+    let targetStr = e.currentTarget.value;
+
+    for (let j = 0; j < targetStr.length; j++) {
+      let target = targetStr.slice(j, j + 1);
+      for (let i = 0; i < filterStringName.length; i++) {
+        let result = filterStringName.slice(i, i + 1);
+        if (target == result) {
+          e.currentTarget.value = e.currentTarget.value.replace(target, "");
+          e.preventDefault();
+        }
+      }
+    }
+  };
+
+  const handleChangeEmail = (e) => {
+    let targetStr = e.currentTarget.value;
+
+    for (let j = 0; j < targetStr.length; j++) {
+      let target = targetStr.slice(j, j + 1);
+      for (let i = 0; i < filterStringEmail.length; i++) {
+        let result = filterStringEmail.slice(i, i + 1);
+        if (target == result) {
+          e.currentTarget.value = e.currentTarget.value.replace(target, "");
+          e.preventDefault();
+        }
+      }
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -359,110 +392,136 @@ const Confirm = () => {
                 {({ errors, touched, values, isValid, handleChange }) => {
                   return (
                     <Form>
-                      <CustomOutlinedInput
-                        size="small"
-                        type="text"
-                        value={values.name}
-                        name="name"
-                        label="Nombre y apellido *"
-                        error={touched.name && errors.name}
-                        maxLength={60}
-                        block
-                      />
-                      <CustomOutlinedInput
-                        size="small"
-                        type="text"
-                        label="Email *"
-                        value={values.email}
-                        name="email"
-                        error={touched.email && errors.email}
-                        maxLength={60}
-                        block
-                      />
-                      <Field type="text" id="celular" name="celular">
-                        {({ field }) => (
-                          <MuiPhoneNumber
-                            {...field}
-                            size="small"
-                            label="Recibir las tarjetas por Whastapp"
-                            variant="outlined"
-                            value={values.celular}
-                            onChange={handleChange("celular")}
-                            countryCodeEditable={false}
-                            onlyCountries={["mx"]}
-                            name="celular"
-                            error={touched.celular && Boolean(errors.celular)}
-                            margin="dense"
-                            defaultCountry={"mx"}
-                            helperText={touched.celular && errors.celular}
-                            style={{ width: "100%" }}
-                          />
-                        )}
-                      </Field>
-                      <h3 className={classes.leftTitle} style={{ marginTop: 10 }}>
-                        Proceso de pago
-                      </h3>
-                      <div className={classNames(classes.cardMargin)}>
-                        <div className={classes.cardNumber_input}>
-                          <NumberFormat
-                            className={classes.cardNumber_input_}
-                            type="text"
-                            value={cardNumber}
-                            placeholder={placeholder}
-                            maxLength={maxLength}
-                            onChange={handleChange_}
-                          />
+                      <MuiThemeProvider theme={theme}>
+                        <CustomOutlinedInput
+                          size="small"
+                          type="text"
+                          value={values.name}
+                          name="name"
+                          label="Nombre y apellido *"
+                          error={touched.name && errors.name}
+                          onChange={(e) => {
+                            handleChangeName(e);
+                            handleChange(e);
+                          }}
+                          maxLength={60}
+                          block
+                        />
+                        <CustomOutlinedInput
+                          size="small"
+                          type="text"
+                          label="Email *"
+                          value={values.email}
+                          name="email"
+                          error={touched.email && errors.email}
+                          onChange={(e) => {
+                            handleChangeEmail(e);
+                            handleChange(e);
+                          }}
+                          maxLength={60}
+                          block
+                        />
+                        <Field type="text" id="celular" name="celular">
+                          {({ field }) => (
+                            <MuiPhoneNumber
+                              {...field}
+                              size="small"
+                              label="Recibir las tarjetas por Whastapp"
+                              variant="outlined"
+                              value={values.celular}
+                              onChange={handleChange("celular")}
+                              countryCodeEditable={false}
+                              onlyCountries={["mx"]}
+                              name="celular"
+                              error={touched.celular && Boolean(errors.celular)}
+                              margin="dense"
+                              defaultCountry={"mx"}
+                              helperText={touched.celular && errors.celular}
+                              style={{ width: "100%" }}
+                            />
+                          )}
+                        </Field>
+                        <h3 className={classes.leftTitle} style={{ marginTop: 10 }}>
+                          Proceso de pago
+                        </h3>
+                        <div className={classNames(classes.cardMargin)}>
+                          <div className={classes.cardNumber_input}>
+                            <NumberFormat
+                              className={classes.cardNumber_input_}
+                              type="text"
+                              value={cardNumber}
+                              placeholder={placeholder}
+                              maxLength={maxLength}
+                              onChange={handleChange_}
+                            />
+                          </div>
+                          {error == true ? (
+                            <div className={classes.error_text_}>{valid ? validMessage : invalidMessage}</div>
+                          ) : (
+                            <div className={classes.error_text}>{valid ? validMessage : invalidMessage}</div>
+                          )}
+                          <div>
+                            <Logo type={Visa} alt="Visa" active={activeVisa} />
+                            <Logo type={Mastercard} alt="Mastercard" active={activeMastercard} />
+                            <Logo type={Amex} alt="American Express" active={activeAmex} />
+                          </div>
+                          <div className={classNames(classes.twoInput)}>
+                            <CustomOutlinedInput
+                              className={classNames(classes.dateInput, classes.twoLeft)}
+                              size="small"
+                              type="text"
+                              name="expiryDate"
+                              value={values.expiryDate}
+                              label="MM/YY *"
+                              onChange={handleChange}
+                              InputProps={{
+                                inputComponent: ExpiryDateFormat,
+                              }}
+                              error={touched.expiryDate && errors.expiryDate}
+                              block
+                            />
+                            <CustomOutlinedInput
+                              className={classNames(classes.cvcInput, classes.twoRight)}
+                              size="small"
+                              type="text"
+                              name="cvc"
+                              value={values.cvc}
+                              label="CVV *"
+                              onChange={handleChange}
+                              InputProps={{
+                                inputComponent: CVVFormat,
+                              }}
+                              error={touched.cvc && errors.cvc}
+                              block
+                            />
+                          </div>
                         </div>
-                        {error == true ? (
-                          <div className={classes.error_text_}>{valid ? validMessage : invalidMessage}</div>
-                        ) : (
-                          <div className={classes.error_text}>{valid ? validMessage : invalidMessage}</div>
-                        )}
-                        <div>
-                          <Logo type={Visa} alt="Visa" active={activeVisa} />
-                          <Logo type={Mastercard} alt="Mastercard" active={activeMastercard} />
-                          <Logo type={Amex} alt="American Express" active={activeAmex} />
-                        </div>
-                        <div className={classNames(classes.twoInput)}>
-                          <CustomOutlinedInput
-                            className={classNames(classes.dateInput, classes.twoLeft)}
-                            size="small"
-                            type="text"
-                            name="expiryDate"
-                            value={values.expiryDate}
-                            label="MM/YY *"
-                            onChange={handleChange}
-                            InputProps={{
-                              inputComponent: ExpiryDateFormat,
-                            }}
-                            error={touched.expiryDate && errors.expiryDate}
-                            block
-                          />
-                          <CustomOutlinedInput
-                            className={classNames(classes.cvcInput, classes.twoRight)}
-                            size="small"
-                            type="text"
-                            name="cvc"
-                            value={values.cvc}
-                            label="CVV *"
-                            onChange={handleChange}
-                            InputProps={{
-                              inputComponent: CVVFormat,
-                            }}
-                            error={touched.cvc && errors.cvc}
-                            block
-                          />
-                        </div>
-                      </div>
-                      <Button
-                        color="primary"
-                        id="payButton"
-                        style={{ float: "right", width: 200 }}
-                        type="submit"
-                        disabled={!isValid || disableBtn || !valid}
-                      >
-                        PAGAR
-                      </Button>
+                      </MuiThemeProvider>
+                      {partner && partner.colors && partner.colors.button ? (
+                        <Button
+                          color="primary"
+                          id="payButton"
+                          style={{
+                            float: "right",
+                            width: 200,
+                            backgroundColor: !isValid || disableBtn || !valid ? "" : partner.colors.button,
+                          }}
+                          type="submit"
+                          disabled={!isValid || disableBtn || !valid}
+                        >
+                          PAGAR
+                        </Button>
+                      ) : (
+                        <Button
+                          color="primary"
+                          id="payButton"
+                          style={{ float: "right", width: 200 }}
+                          type="submit"
+                          disabled={!isValid || disableBtn || !valid}
+                        >
+                          PAGAR
+                        </Button>
+                      )}
                     </Form>
                   );
                 }}
@@ -472,7 +531,16 @@ const Confirm = () => {
           {success && (
             <>
               <div className={classes.titleContainer}>
-                <CheckCircleRounded fontSize="large" color="primary" />
+                {partner && partner.colors && partner.colors.button ? (
+                  <CheckCircleRounded
+                    fontSize="large"
+                    style={{
+                      color: partner.colors.button,
+                    }}
+                  />
+                ) : (
+                  <CheckCircleRounded fontSize="large" color="primary" />
+                )}
                 <div>
                   <h3>Compra exitosa</h3>
                   <p>Aquí están los detalles de tu orden. También hemos enviado una copia de esta información a tu correo.</p>
@@ -502,16 +570,38 @@ const Confirm = () => {
             {success == true ? !ordersTemp?.length && "No Cart" : !orders?.length && "No Cart"}
           </div>
           <hr />
+          {couponResult && sessionStorage.getItem("confirmCouponText") != "" && (
+            <div>
+              <div className={classes.successCouponText}>Cupón válido</div>
+              <div className={classes.recalcTotalText}>{sessionStorage.getItem("confirmCouponText")}</div>
+              {sessionStorage.getItem("confirmCouponText_") != "" &&
+                sessionStorage.getItem("confirmCouponText_").substring(3, 4) != "0" && (
+                  <div className={classes.recalcTotalText_}>{sessionStorage.getItem("confirmCouponText_")}</div>
+                )}
+            </div>
+          )}
           <h6 className={classNames(classes.rightSubTitle)}>
-            <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} />${getTotal()}
+            <span className={classNames("total")}>Total</span> <span className={classes.dottedLine} />$
+            {sessionStorage.getItem("total")}
           </h6>
 
           <div className={classes.align_center}>
             {success == true ? (
               <Link to={homeUrl}>
-                <Button color="primary">
-                  <Home /> Seguir comprando
-                </Button>
+                {partner && partner.colors && partner.colors.button ? (
+                  <Button
+                    color="primary"
+                    style={{
+                      backgroundColor: partner.colors.button,
+                    }}
+                  >
+                    <Home /> Seguir comprando
+                  </Button>
+                ) : (
+                  <Button color="primary">
+                    <Home /> Seguir comprando
+                  </Button>
+                )}
               </Link>
             ) : (
               <div></div>

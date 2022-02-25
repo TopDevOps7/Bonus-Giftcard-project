@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import QRCode from "react-qr-code";
-
-import { makeStyles, useMediaQuery, useTheme } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import { makeStyles, useMediaQuery, useTheme } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -326,7 +325,6 @@ const useStyles = makeStyles(() => ({
     height: "20px",
     backgroundColor: "white",
   },
-
   dotline_h: {
     position: "absolute",
     height: 12,
@@ -360,22 +358,34 @@ const useStyles = makeStyles(() => ({
     marginTop: "40px",
     position: "relative",
   },
+  logo: {
+    width: "30px !important",
+    height: "30px !important",
+    position: "absolute",
+    right: 30,
+    top: 15,
+  },
+  logo_: {
+    width: "30px !important",
+    height: "30px !important",
+    position: "absolute",
+    right: 30,
+    top: 25,
+  },
 }));
 
 const Success = ({ item, successItem, buyer, email, phone }) => {
   const classes = useStyles();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
   const [cardNum, setCardNum] = useState(0);
-
   const cardsDesign = useSelector(({ home }) => home.cardsDesign);
 
   useEffect(() => {
     cardsDesign &&
       cardsDesign.length != 0 &&
       cardsDesign.map((card, ind) => {
-        card.name == item.style && setCardNum(ind);
+        card.name == item.cardsDesign.name && setCardNum(ind);
       });
   }, [cardsDesign]);
 
@@ -393,31 +403,51 @@ const Success = ({ item, successItem, buyer, email, phone }) => {
               ) : (
                 <div></div>
               )}
-              <h5 className="giftcardName">{item.giftcard.name}</h5>
-              <h5 className="amount">{item.amount / 100 + " mxn"}</h5>
+              {item.cardsDesign.logo == "image" ? (
+                <img className={classes.logo} src={item.logo} alt={item.giftcard.name} draggable={false} />
+              ) : (
+                <h5 className="giftcardName" style={{ color: item.cardsDesign.style }}>
+                  {item.giftcard.name}
+                </h5>
+              )}
+              <h5 className="amount" style={{ color: item.cardsDesign.style }}>
+                {item.amount / 100 + " mxn"}
+              </h5>
               {successItem.type == "text" && successItem.number != null ? (
                 <h5 className="textNumber">&nbsp;&nbsp;{successItem.number}&nbsp;&nbsp;</h5>
               ) : (
                 <div></div>
               )}
               {successItem.validity == null ? (
-                <h5 className="valid">{"Vigencia: "}</h5>
+                <h5 className="valid" style={{ color: item.cardsDesign.style }}>
+                  {"Vigencia: "}
+                </h5>
               ) : (
-                <h5 className="valid">{"Vigencia: " + successItem.validity.description.substr(0, 10)}</h5>
+                <h5 className="valid" style={{ color: item.cardsDesign.style }}>
+                  {"Vigencia: " + successItem.validity.description.substr(0, 10)}
+                </h5>
               )}
               {successItem.number == null ? (
                 successItem.gift ? (
-                  <h4 className="buyer">{successItem.gift.name}</h4>
+                  <h4 className="buyer" style={{ color: item.cardsDesign.style }}>
+                    {successItem.gift.name}
+                  </h4>
                 ) : (
                   <h4 className="buyer"></h4>
                 )
               ) : (
-                <h4 className="buyer">{buyer}</h4>
+                <h4 className="buyer" style={{ color: item.cardsDesign.style }}>
+                  {buyer}
+                </h4>
               )}
               {successItem.number == null ? (
-                <p className="successUUID">{successItem.orderId}</p>
+                <p className="successUUID" style={{ color: item.cardsDesign.style }}>
+                  {successItem.orderId}
+                </p>
               ) : (
-                <p className="successUUID">{successItem.uuid}</p>
+                <p className="successUUID" style={{ color: item.cardsDesign.style }}>
+                  {successItem.uuid}
+                </p>
               )}
             </div>
             <br />
@@ -475,31 +505,51 @@ const Success = ({ item, successItem, buyer, email, phone }) => {
             ) : (
               <div className={classes.mobileqrBackground1}></div>
             )}
-            <h5 className={classes.giftcardNamemobile}>{item.giftcard.name}</h5>
-            <h5 className={classes.amount}>{item.amount / 100 + " mxn"}</h5>
+            {item.cardsDesign.logo == "image" ? (
+              <img className={classes.logo_} src={item.logo} alt={item.giftcard.name} draggable={false} />
+            ) : (
+              <h5 className={classes.giftcardNamemobile} style={{ color: item.cardsDesign.style }}>
+                {item.giftcard.name}
+              </h5>
+            )}
+            <h5 className={classes.amount} style={{ color: item.cardsDesign.style }}>
+              {item.amount / 100 + " mxn"}
+            </h5>
             {successItem.type == "text" && successItem.number != null ? (
               <h5 className={classes.textNumber}>&nbsp;&nbsp;{successItem.number}&nbsp;&nbsp;</h5>
             ) : (
               <div></div>
             )}
             {successItem.validity == null ? (
-              <h5 className={classes.valid}>{"Vigencia: "}</h5>
+              <h5 className={classes.valid} style={{ color: item.cardsDesign.style }}>
+                {"Vigencia: "}
+              </h5>
             ) : (
-              <h5 className={classes.valid}>{"Vigencia: " + successItem.validity.description.substr(0, 10)}</h5>
+              <h5 className={classes.valid} style={{ color: item.cardsDesign.style }}>
+                {"Vigencia: " + successItem.validity.description.substr(0, 10)}
+              </h5>
             )}
             {successItem.number == null ? (
               successItem.gift ? (
-                <h4 className="buyer">{successItem.gift.name}</h4>
+                <h4 className={classes.buyer} style={{ color: item.cardsDesign.style }}>
+                  {successItem.gift.name}
+                </h4>
               ) : (
-                <h4 className="buyer"></h4>
+                <h4 className={classes.buyer}></h4>
               )
             ) : (
-              <h4 className="buyer">{buyer}</h4>
+              <h4 className={classes.buyer} style={{ color: item.cardsDesign.style }}>
+                {buyer}
+              </h4>
             )}
             {successItem.number == null ? (
-              <p className={classes.successUUID}>{successItem.orderId}</p>
+              <p className={classes.successUUID} style={{ color: item.cardsDesign.style }}>
+                {successItem.orderId}
+              </p>
             ) : (
-              <p className={classes.successUUID}>{successItem.uuid}</p>
+              <p className={classes.successUUID} style={{ color: item.cardsDesign.style }}>
+                {successItem.uuid}
+              </p>
             )}
           </div>
           <div className={classes.dotline_container_h}>

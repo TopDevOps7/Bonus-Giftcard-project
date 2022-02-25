@@ -17,6 +17,7 @@ import {
   GET_PARTNER,
   GET_EMAIL_RESULT_REQUEST,
   GET_CARDSDESIGN,
+  SET_COUPON,
   FILTER_CARDS_BY_CATEGORY,
   FILTER_CARDS_BY_NAME,
   CLEAN_FILTERS,
@@ -30,17 +31,20 @@ export const getCards = (partnerId, navigate) => (dispatch, getState) => {
   axios
     .get(apiUrl, tokenConfig(getState))
     .then((res) => {
-      // console.log(res.data, "----------res.data-----------");
       let payload = res.data;
       let partner = partner;
       let logoUrl = logo;
       let categories = categories;
       let banners = banners;
+
       payload = res.data.partner.catalog.giftcards;
       partner = res.data.partner;
       logoUrl = res.data.partner.logo ?? logo;
       categories = res.data.categories;
       banners = res.data.partner.configuration.banner;
+
+      sessionStorage.setItem("partner", JSON.stringify(partner));
+
       dispatch({
         type: GET_CARDS_REQUEST,
         categories,
@@ -59,6 +63,10 @@ export const getCards = (partnerId, navigate) => (dispatch, getState) => {
         partnerId,
         logo: logoUrl,
       });
+
+      if (payload.length == 1) {
+        partnerId ? navigate(`/${partnerId}/card/detail/${payload[0].id}`) : navigate(`/card/detail/${payload[0].id}`);
+      }
     })
     .catch((error) => {
       localStorage.clear();
@@ -81,9 +89,11 @@ export const getCardDetail = (cardId, partnerId, navigate) => (dispatch, getStat
     .then((res) => {
       let payload = res.data;
       let logoUrl = logo;
+      let partner = partner;
       let cardsDesign = [];
       let cardsDesign_ = res.data.partner.catalog.configuration.cardsDesign;
       payload = res.data.partner.catalog.giftcards;
+      partner = res.data.partner;
       logoUrl = res.data.partner.logo ?? logo;
 
       cardsDesign_.length != 0 &&
@@ -97,6 +107,30 @@ export const getCardDetail = (cardId, partnerId, navigate) => (dispatch, getStat
           cardsDesign.push(ele);
         });
 
+      if (sessionStorage.getItem("cardsDesign")) {
+        let cardsDesignList = JSON.parse(sessionStorage.getItem("cardsDesign"));
+        let cardsDesignList_ = [];
+        let found = false;
+        cardsDesign.map((ele) => {
+          found = false;
+          cardsDesignList.map((ele_) => {
+            ele.name == ele_.name && (found = true);
+          });
+          found == false && cardsDesignList_.push(ele);
+        });
+
+        cardsDesignList_.length != 0 &&
+          cardsDesignList_.map((ele) => {
+            cardsDesignList.push(ele);
+          });
+
+        sessionStorage.setItem("cardsDesign", JSON.stringify(cardsDesignList));
+      } else {
+        sessionStorage.setItem("cardsDesign", JSON.stringify(cardsDesign));
+      }
+
+      sessionStorage.setItem("partner", JSON.stringify(partner));
+
       if (payload.length > 0) {
         payload = payload[0];
       } else {
@@ -107,6 +141,10 @@ export const getCardDetail = (cardId, partnerId, navigate) => (dispatch, getStat
         payload,
         partnerId,
         logo: logoUrl,
+      });
+      dispatch({
+        type: GET_PARTNER,
+        partner,
       });
       dispatch({
         type: GET_CARDSDESIGN,
@@ -127,9 +165,14 @@ export const getEmailResultRequest = (partnerId, userId, uuid, navigate) => (dis
     .get(apiUrl, tokenConfig(getState))
     .then((res) => {
       let payload = res.data;
+      let partner = res.data.partner;
       dispatch({
         type: GET_EMAIL_RESULT_REQUEST,
         payload,
+      });
+      dispatch({
+        type: GET_PARTNER,
+        partner,
       });
     })
     .catch((error) => {
@@ -163,6 +206,32 @@ export const getEmailResultResponse_ = (partnerId, userId, uuid, email, navigate
     localStorage.setItem("resultStatus", "");
     navigate(`/404`);
   }
+};
+
+export const sendCoupon = (partnerId, cardId, coupon) => async (dispatch) => {
+  let apiUrl = `${BACKEND_URL}discount/`;
+  const payload = {
+    partnerId: partnerId,
+    giftcard: cardId,
+    code: coupon,
+  };
+
+  try {
+    const res = await axios.post(apiUrl, payload, tokenConfig());
+    res.status == 200
+      ? sessionStorage.setItem("coupon", JSON.stringify(res.data))
+      : sessionStorage.setItem("errorCouponText", "");
+  } catch (error) {
+    sessionStorage.setItem("coupon", JSON.stringify({}));
+    sessionStorage.setItem("errorCouponText", error.response.data.message);
+  }
+};
+
+export const setCoupon = (coupon) => async (dispatch) => {
+  dispatch({
+    type: SET_COUPON,
+    coupon,
+  });
 };
 
 export const filterByCategory = (category) => (dispatch) => {

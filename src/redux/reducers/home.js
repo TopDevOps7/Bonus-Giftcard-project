@@ -12,6 +12,7 @@ import {
   GET_PARTNER,
   GET_EMAIL_RESULT_REQUEST,
   GET_CARDSDESIGN,
+  SET_COUPON,
   FILTER_CARDS_BY_CATEGORY,
   FILTER_CARDS_BY_NAME,
   CLEAN_FILTERS,
@@ -19,6 +20,7 @@ import {
   ADD_ORDER,
   DELETE_ORDER,
   EDIT_ORDER,
+  CHANGE_ORDERS,
   CHANGE_PAGE,
 } from "../actionTypes";
 
@@ -49,6 +51,8 @@ const initialState = {
   partner: {},
   emailResult: {},
   cardsDesign: [],
+  changeOrders: false,
+  coupon: {},
 };
 
 export default function (state = initialState, action) {
@@ -91,6 +95,14 @@ export default function (state = initialState, action) {
       return {
         ...state,
         cardsDesign,
+      };
+    }
+    case SET_COUPON: {
+      let coupon = state.coupon;
+      coupon = action.coupon;
+      return {
+        ...state,
+        coupon,
       };
     }
     case GET_CARD_DETAIL_REQUEST: {
@@ -244,15 +256,28 @@ export default function (state = initialState, action) {
       updatedOrders = updatedOrders ?? [];
       updatedOrders.splice(action.payload.index, 1, action.payload.order);
 
-      let partner_ids = localStorage.getItem("partner_ids").split(",/");
-      localStorage.setItem(
-        partnerId,
-        JSON.stringify({
-          ...state.data[partnerId],
+      let partner_ids = [];
+      if (localStorage.getItem("partner_ids")) {
+        partner_ids = localStorage.getItem("partner_ids").split(",/");
+        localStorage.setItem(
           partnerId,
-          orders: updatedOrders,
-        })
-      );
+          JSON.stringify({
+            ...state.data[partnerId],
+            partnerId,
+            orders: updatedOrders,
+          })
+        );
+      } else {
+        partner_ids.push(partnerId);
+        localStorage.setItem(
+          partnerId,
+          JSON.stringify({
+            ...state.data[partnerId],
+            partnerId,
+            orders: updatedOrders,
+          })
+        );
+      }
 
       let partner_data = {};
       partner_ids.map((item) => {
@@ -271,15 +296,30 @@ export default function (state = initialState, action) {
       deletedOrder = deletedOrder ?? [];
       deletedOrder.splice(action.payload.index, 1);
 
-      let partner_ids = localStorage.getItem("partner_ids").split(",/");
-      localStorage.setItem(
-        partnerId,
-        JSON.stringify({
-          ...state.data[partnerId],
+      let partner_ids = [];
+      if (localStorage.getItem("partner_ids")) {
+        partner_ids = localStorage.getItem("partner_ids").split(",/");
+        localStorage.setItem(
           partnerId,
-          orders: deletedOrder,
-        })
-      );
+          JSON.stringify({
+            ...state.data[partnerId],
+            partnerId,
+            orders: deletedOrder,
+          })
+        );
+      } else {
+        partner_ids.push(partnerId);
+        localStorage.setItem(
+          partnerId,
+          JSON.stringify({
+            ...state.data[partnerId],
+            partnerId,
+            orders: deletedOrder,
+          })
+        );
+      }
+
+      deletedOrder.length == 0 && (sessionStorage.setItem("coupon", JSON.stringify({})), (state.coupon = {}));
 
       let partner_data = {};
       partner_ids.map((item) => {
@@ -289,6 +329,14 @@ export default function (state = initialState, action) {
       return {
         ...state,
         data: partner_data,
+      };
+    }
+    case CHANGE_ORDERS: {
+      let changeOrders = state.changeOrders;
+      changeOrders = action.payload;
+      return {
+        ...state,
+        changeOrders,
       };
     }
     case CHANGE_PAGE:

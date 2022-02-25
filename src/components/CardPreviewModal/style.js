@@ -2,16 +2,16 @@ import { makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
-    position: 'absolute',
+    position: "absolute",
     width: 330,
     top: 132,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     // border: '2px solid #000',
     left: "50%",
     transform: "translate(-50%, 0)",
     // boxShadow: theme.shadows[5],
     padding: 0,
-    minHeight: 367
+    minHeight: 367,
   },
   close: {
     width: "100%",
@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       top: -30,
       right: 10,
-    }
+    },
   },
   cardBackground: {
     position: "absolute",
@@ -34,13 +34,20 @@ const useStyles = makeStyles((theme) => ({
     left: 0,
     width: 330,
     borderRadius: 5,
-    zIndex: -1
+    zIndex: -1,
   },
   cardInfo: {
     margin: "56px auto 0",
     width: 296,
     position: "relative",
-    color: "#fff"
+    color: "#fff",
+  },
+  logo: {
+    width: "30px !important",
+    height: "30px !important",
+    position: "absolute",
+    right: 20,
+    top: 10,
   },
   cardImg: {
     width: 296,
@@ -99,7 +106,7 @@ const useStyles = makeStyles((theme) => ({
     height: 1,
     backgroundColor: "#ccc",
     border: "none",
-  }
+  },
 }));
 
 export default useStyles;

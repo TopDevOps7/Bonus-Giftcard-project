@@ -194,9 +194,7 @@ button.slick-arrow.slick-next {
   z-index: 1;
 }
 .slick-dots {
-  margin-top: 0;
   margin-bottom: 1rem;
-  position: absolute;
   bottom: 5px;
   // margin-right: 15%;
   // margin-left: 15%;
@@ -239,15 +237,19 @@ button.slick-arrow.slick-next {
     background-color: #fff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
-      0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    border-radius: 2px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),      0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
     transition: all 300ms linear;
-  }
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
+}
 }
 .slick-dots li.slick-active button:before {
   width: 15px;
   height: 15px;
+  background-color: #999999;
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12),
     0 2px 4px -1px rgba(0, 0, 0, 0.2);
   top: -3px;

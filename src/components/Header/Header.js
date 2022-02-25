@@ -25,7 +25,6 @@ import { cleanFilters } from "redux/actions/home";
 import { useDispatch } from "react-redux";
 import Button from "components/CustomButtons/Button";
 import { changePage } from "redux/actions/home";
-import logoImg from "assets/img/logo.png";
 
 const useStyles = makeStyles(styles);
 
@@ -37,11 +36,14 @@ const Header = (props) => {
   const { partnerId } = useParams();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const logoPosition = useSelector(({ home }) => home.partner.configuration);
   const logo = useSelector(({ home }) => {
-    if (home.partner.logo) {
-      return home.partner.logo;
+    if (sessionStorage.getItem("logo")) {
+      return sessionStorage.getItem("logo");
+    } else if (home.partner.configuration && home.partner.configuration.logo.image) {
+      return home.partner.configuration.logo.image;
     } else {
-      return logoImg;
+      return "";
     }
   });
 
@@ -97,18 +99,23 @@ const Header = (props) => {
           <div className={classNames(classes.mobileVersion)}>
             <Toolbar disableGutters className={classNames("cardBanner")} style={{ margin: "auto" }}>
               <Link to={homeUrl}>
-                <img
-                  src={logo}
-                  className={classes.logo}
-                  alt="logo"
-                  draggable={false}
-                  onClick={() => {
-                    document.getElementById("outlined-adornment-filter") &&
-                      (document.getElementById("outlined-adornment-filter").value = "");
-                    dispatch(cleanFilters());
-                    dispatch(changePage(1));
-                  }}
-                />
+                {logoPosition && (
+                  <img
+                    src={logo}
+                    style={{
+                      top: logoPosition.logo.top ? logoPosition.logo.top : 0,
+                      left: logoPosition.logo.left ? logoPosition.logo.left : 0,
+                      width: logoPosition.logo.width ? logoPosition.logo.width : 100,
+                    }}
+                    draggable={false}
+                    onClick={() => {
+                      document.getElementById("outlined-adornment-filter") &&
+                        (document.getElementById("outlined-adornment-filter").value = "");
+                      dispatch(cleanFilters());
+                      dispatch(changePage(1));
+                    }}
+                  />
+                )}
               </Link>
               {leftLinks !== undefined ? brandComponent : null}
               <div className={classes.flex}>
@@ -170,6 +177,7 @@ const Header = (props) => {
                         width: "90%",
                         borderRadius: 10,
                         height: 56,
+                        marginTop: 10,
                       }}
                       id="outlined-adornment-filter"
                       type="text"

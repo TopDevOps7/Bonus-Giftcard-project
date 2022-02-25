@@ -11,6 +11,8 @@ import useStyles from "./style";
 import img_mail from "../../assets/img/Grupo 159.svg";
 import img_mail_ from "../../assets/img/Grupo 160.svg";
 
+import { filterStringEmail } from "../../constants";
+
 const Mail = () => {
   const { partnerId, userId, uuid } = useParams();
   const classes = useStyles();
@@ -23,9 +25,14 @@ const Mail = () => {
   const [resultStatus, setResultStatus] = useState(false);
   const [min, setMin] = useState(2);
   const [sec, setSec] = useState("00");
+  let partner = useSelector(({ home }) => home.partner.configuration);
+  let documentTitle = useSelector(({ home }) => home.partner.name);
+
+  documentTitle && (document.title = documentTitle);
+
+  JSON.parse(sessionStorage.getItem("partner")) && (partner = JSON.parse(sessionStorage.getItem("partner")).configuration);
 
   useEffect(() => {
-    console.log(emailResult, "emailResult");
     emailResult && emailResult.gift && setName(emailResult.gift.name);
     emailResult && emailResult.gift && setEmail(emailResult.gift.email);
     localStorage.getItem("emailStatus") == "sending" && (setResultStatus(true), countTime());
@@ -90,6 +97,21 @@ const Mail = () => {
     return Yup.object(validation);
   };
 
+  const handleChangeEmail = (e) => {
+    let targetStr = e.currentTarget.value;
+
+    for (let j = 0; j < targetStr.length; j++) {
+      let target = targetStr.slice(j, j + 1);
+      for (let i = 0; i < filterStringEmail.length; i++) {
+        let result = filterStringEmail.slice(i, i + 1);
+        if (target == result) {
+          e.currentTarget.value = e.currentTarget.value.replace(target, "");
+          e.preventDefault();
+        }
+      }
+    }
+  };
+
   return (
     <div className={classes.root}>
       {emailResult && emailResult.gift && emailResult.gift.statusMail == "received" && resultStatus == false && (
@@ -111,9 +133,21 @@ const Mail = () => {
             <span className={classes.txt_content_sub}>¿Quieres reenviar al correo?</span>
           </div>
           <div className={classes.margin_top_30}>
-            <Button id="para-button-" color="primary" disabled={disableBtn} onClick={() => handleButtonClick()}>
-              REENVIAR CORREO
-            </Button>
+            {partner && partner.colors && partner.colors.button ? (
+              <Button
+                id="para-button-"
+                color="primary"
+                disabled={disableBtn}
+                style={{ backgroundColor: disableBtn ? "" : partner.colors.button }}
+                onClick={() => handleButtonClick()}
+              >
+                REENVIAR CORREO
+              </Button>
+            ) : (
+              <Button id="para-button-" color="primary" disabled={disableBtn} onClick={() => handleButtonClick()}>
+                REENVIAR CORREO
+              </Button>
+            )}
           </div>
         </div>
       )}
@@ -144,7 +178,7 @@ const Mail = () => {
             validationSchema={getValidationSchema()}
             onSubmit={handleSubmit}
           >
-            {({ errors, touched, values, isValid }) => {
+            {({ errors, touched, values, isValid, handleChange }) => {
               return (
                 <Form>
                   <div className={classes.hr_center}>
@@ -155,6 +189,10 @@ const Mail = () => {
                       value={values.email}
                       name="email"
                       error={touched.email && errors.email}
+                      onChange={(e) => {
+                        handleChangeEmail(e);
+                        handleChange(e);
+                      }}
                       maxLength={60}
                       block
                     />
@@ -163,9 +201,21 @@ const Mail = () => {
                     <span className={classes.txt_content_sub}>¿Quieres reenviar al correo?</span>
                   </div>
                   <div className={classes.margin_top_30}>
-                    <Button id="para-button" color="primary" type="submit" disabled={!isValid || disableBtn}>
-                      REENVIAR CORREO
-                    </Button>
+                    {partner && partner.colors && partner.colors.button ? (
+                      <Button
+                        id="para-button"
+                        color="primary"
+                        type="submit"
+                        disabled={!isValid || disableBtn}
+                        style={{ backgroundColor: !isValid || disableBtn ? "" : partner.colors.button }}
+                      >
+                        REENVIAR CORREO
+                      </Button>
+                    ) : (
+                      <Button id="para-button" color="primary" type="submit" disabled={!isValid || disableBtn}>
+                        REENVIAR CORREO
+                      </Button>
+                    )}
                   </div>
                 </Form>
               );
@@ -174,7 +224,7 @@ const Mail = () => {
         </div>
       )}
       {emailResult && emailResult.gift && emailResult.gift.statusMail == null && <div></div>}
-      {resultStatus == true && (
+      {(resultStatus == true || (emailResult && emailResult.gift && emailResult.gift.statusMail == "error")) && (
         <div>
           <span className={classes.success_tittle}>ENVIADO</span>
           <div className={classes.margin_top_30}>

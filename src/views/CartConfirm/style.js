@@ -277,5 +277,26 @@ const useStyles = makeStyles((theme) => ({
   align_center: {
     textAlign: "center",
   },
+
+  successCouponText: {
+    textAlign: "right",
+    marginTop: 15,
+    color: "green",
+    fontSize: 13,
+  },
+
+  recalcTotalText: {
+    marginTop: 0,
+    textAlign: "right",
+    marginBottom: -35,
+    fontSize: 13,
+  },
+
+  recalcTotalText_: {
+    marginTop: 30,
+    textAlign: "right",
+    marginBottom: -35,
+    fontSize: 13,
+  },
 }));
 export default useStyles;

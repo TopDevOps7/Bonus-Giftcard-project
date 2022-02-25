@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-
-import { makeStyles, withStyles, Badge } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import { makeStyles, withStyles, Badge } from "@material-ui/core";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -55,14 +54,13 @@ const StyledBadge = withStyles((theme) => ({
 const CartCardList = ({ item }) => {
   const classes = useStyle();
   const [cardNum, setCardNum] = useState(0);
-
   const cardsDesign = useSelector(({ home }) => home.cardsDesign);
 
   useEffect(() => {
     cardsDesign &&
       cardsDesign.length != 0 &&
       cardsDesign.map((card, ind) => {
-        card.name == item.style && setCardNum(ind);
+        card.name == item.cardsDesign.name && setCardNum(ind);
       });
   }, [cardsDesign]);
 

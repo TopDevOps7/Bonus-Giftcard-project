@@ -63,7 +63,7 @@ const styles = (theme) => ({
   },
   container: {
     maxWidth: 1080,
-    margin: "30px auto",
+    margin: "auto",
     display: "flex",
     alignItems: "start",
     [theme.breakpoints.down("sm")]: {
@@ -86,7 +86,7 @@ const styles = (theme) => ({
     color: "white",
     display: "flex",
     flexDirection: "column",
-    transform: "translateY(-100%)",
+    transform: "translateY(-99%)",
     marginBottom: -70,
     "& br": {
       display: "none",
@@ -197,9 +197,49 @@ export default function Cards() {
   const loading = useSelector(({ home }) => home.loading);
   const pagination = useSelector(({ home }) => home.pagination);
   const categories = useSelector(({ home }) => home.categories);
+  let partner = useSelector(({ home }) => home.partner.configuration);
+  let documentTitle = useSelector(({ home }) => home.partner.name);
+
+  documentTitle && (document.title = documentTitle);
+
+  JSON.parse(sessionStorage.getItem("partner")) && (partner = JSON.parse(sessionStorage.getItem("partner")).configuration);
+
+  function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
+  }
+
+  const styles_ = () => ({
+    pagination_root: {
+      "& .Mui-selected": {
+        color: partner && partner.colors && partner.colors.fixedAmount ? `${partner.colors.fixedAmount}` : "#3F51B5",
+        border:
+          partner && partner.colors && partner.colors.fixedAmount
+            ? `1px solid rgba(${hexToRgb(partner.colors.fixedAmount).r}, ${hexToRgb(partner.colors.fixedAmount).g}, ${
+                hexToRgb(partner.colors.fixedAmount).b
+              }, 0.5)`
+            : `1px solid rgba(98, 0, 238, 0.5)`,
+        backgroundColor:
+          partner && partner.colors && partner.colors.fixedAmount
+            ? `rgba(${hexToRgb(partner.colors.fixedAmount).r}, ${hexToRgb(partner.colors.fixedAmount).g}, ${
+                hexToRgb(partner.colors.fixedAmount).b
+              }, 0.12)`
+            : `rgba(98, 0, 238, 0.12)`,
+      },
+    },
+  });
+
+  const useStyles_ = makeStyles(styles_);
+  const classes_ = useStyles_();
 
   sessionStorage.setItem("session", "session");
-  // !partnerId && navigate("/2203c651-f239-436f-b813-2a988efcdf81");
+  partner && sessionStorage.setItem("logo", partner.logo.image);
 
   const { cards, count } = useSelector(({ home }) => {
     let filtered = home.cards
@@ -265,39 +305,78 @@ export default function Cards() {
           <h3>Categorías</h3>
           <div>
             {categories !== [] ? (
-              categories.map((category) => (
-                <Button
-                  className={classNames(classes.filterButton, getStatus(category.name) && "active")}
-                  simple
-                  block
-                  color="github"
-                  onClick={() => dispatch(filterByCategory(category.name))}
-                >
-                  <span className="button-label">
-                    {category.icon ? (
-                      <img src={category.icon} className={classes.category_icon} />
-                    ) : (
-                      <div className={classes.category_icon}></div>
-                    )}{" "}
-                    <span>{category.name}</span>
-                  </span>
-                  {getStatus(category.name) && <Check color="primary" />}
-                </Button>
-              ))
+              partner && partner.colors && partner.colors.button ? (
+                categories.map((category, ind) => (
+                  <Button
+                    key={ind}
+                    className={classNames(classes.filterButton, getStatus(category.name) && "active")}
+                    // style={{ backgroundColor: partner.colors.button }}
+                    simple
+                    block
+                    color="github"
+                    onClick={() => dispatch(filterByCategory(category.name))}
+                  >
+                    <span className="button-label">
+                      {category.icon ? (
+                        <img src={category.icon} className={classes.category_icon} />
+                      ) : (
+                        <div className={classes.category_icon}></div>
+                      )}{" "}
+                      <span>{category.name}</span>
+                    </span>
+                    {getStatus(category.name) && <Check color="primary" />}
+                  </Button>
+                ))
+              ) : (
+                categories.map((category, ind) => (
+                  <Button
+                    key={ind}
+                    className={classNames(classes.filterButton, getStatus(category.name) && "active")}
+                    simple
+                    block
+                    color="github"
+                    onClick={() => dispatch(filterByCategory(category.name))}
+                  >
+                    <span className="button-label">
+                      {category.icon ? (
+                        <img src={category.icon} className={classes.category_icon} />
+                      ) : (
+                        <div className={classes.category_icon}></div>
+                      )}{" "}
+                      <span>{category.name}</span>
+                    </span>
+                    {getStatus(category.name) && <Check color="primary" />}
+                  </Button>
+                ))
+              )
             ) : (
               <div></div>
             )}
-            <Button
-              color="primary"
-              block
-              style={{ marginTop: 30 }}
-              onClick={() => {
-                document.getElementById("outlined-adornment-filter").value = "";
-                dispatch(cleanFilters());
-              }}
-            >
-              QUITAR FILTROS
-            </Button>
+            {partner && partner.colors && partner.colors.button ? (
+              <Button
+                color="primary"
+                block
+                style={{ marginTop: 30, backgroundColor: partner.colors.button }}
+                onClick={() => {
+                  document.getElementById("outlined-adornment-filter").value = "";
+                  dispatch(cleanFilters());
+                }}
+              >
+                QUITAR FILTROS
+              </Button>
+            ) : (
+              <Button
+                color="primary"
+                block
+                style={{ marginTop: 30 }}
+                onClick={() => {
+                  document.getElementById("outlined-adornment-filter").value = "";
+                  dispatch(cleanFilters());
+                }}
+              >
+                QUITAR FILTROS
+              </Button>
+            )}
           </div>
         </div>
       </Hidden>
@@ -321,8 +400,21 @@ export default function Cards() {
                               width="100%"
                               draggable={false}
                             />
-                            {item.discount && (
-                              <div className={classes.discount} dangerouslySetInnerHTML={{ __html: item.discount.legend }}></div>
+                            {item.discount ? (
+                              partner && partner.colors && partner.colors.discountTag ? (
+                                <div
+                                  className={classes.discount}
+                                  style={{ backgroundColor: partner.colors.discountTag }}
+                                  dangerouslySetInnerHTML={{ __html: item.discount.legend }}
+                                ></div>
+                              ) : (
+                                <div
+                                  className={classes.discount}
+                                  dangerouslySetInnerHTML={{ __html: item.discount.legend }}
+                                ></div>
+                              )
+                            ) : (
+                              <div></div>
                             )}
                             <CardBody className={classes.cardBody}>
                               <h4 className={classes.cardTitle}>{item.name}</h4>
@@ -350,7 +442,7 @@ export default function Cards() {
                     <Pagination
                       count={count}
                       page={pagination.page}
-                      color="primary"
+                      className={classes_.pagination_root}
                       variant="outlined"
                       shape="rounded"
                       size={isXsMobile ? "small" : "medium"}

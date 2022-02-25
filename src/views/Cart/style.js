@@ -135,5 +135,49 @@ const useStyles = makeStyles((theme) => ({
   margin_top_80: {
     marginTop: 80,
   },
+  couponDiv: {
+    marginTop: 20,
+    marginBottom: -20,
+  },
+  twoInput: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+  },
+  couponInput: {
+    width: "70%",
+  },
+  couponButton: {
+    width: "30%",
+    marginTop: -8,
+    marginLeft: -1,
+  },
+  errorCouponText: {
+    marginTop: -10,
+    marginLeft: 15,
+    color: "red",
+    fontSize: 13,
+  },
+  successCouponText: {
+    marginTop: -10,
+    marginLeft: 15,
+    color: "green",
+    fontSize: 13,
+  },
+  recalcTotalText: {
+    marginTop: 20,
+    textAlign: "right",
+    marginBottom: -45,
+    fontSize: 13,
+  },
+  recalcTotalText_: {
+    marginTop: 40,
+    textAlign: "right",
+    marginBottom: -45,
+    fontSize: 13,
+  },
+  loading: {
+    marginLeft: 5,
+  },
 }));
 export default useStyles;

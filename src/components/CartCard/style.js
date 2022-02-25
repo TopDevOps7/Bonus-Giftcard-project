@@ -42,6 +42,7 @@ const useStyles = makeStyles((theme) => ({
   infoContainer: {
     flex: 1,
     paddingRight: 20,
+    width: 100,
     [theme.breakpoints.down("sm")]: {
       paddingRight: 0,
     },
@@ -157,13 +158,14 @@ const useStyles = makeStyles((theme) => ({
   },
   btn: {
     backgroundColor: "#fff",
-    color: "#0078D7 !important",
+    color: "#0078D7",
     width: "auto",
     textTransform: "initial",
-    padding: 10,
+    padding: 0,
+    cursor: "pointer",
     "&:hover": {
       textDecoration: "underline",
-      color: "#0078D7",
+      color: "#872199",
       // fontWeight: "bold",
     },
   },
